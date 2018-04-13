@@ -1,0 +1,8 @@
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\bin\Debug\netcoreapp2.0\Brian_Test.deps.json
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\bin\Debug\netcoreapp2.0\Brian_Test.runtimeconfig.json
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\bin\Debug\netcoreapp2.0\Brian_Test.runtimeconfig.dev.json
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\bin\Debug\netcoreapp2.0\Brian_Test.dll
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\obj\Debug\netcoreapp2.0\Brian_Test.csprojResolveAssemblyReference.cache
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\obj\Debug\netcoreapp2.0\Brian_Test.csproj.CoreCompileInputs.cache
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\obj\Debug\netcoreapp2.0\Brian_Test.AssemblyInfoInputs.cache
+D:\Brian\BrianPlay\Brian_Test\Brian_Test\obj\Debug\netcoreapp2.0\Brian_Test.AssemblyInfo.cs
