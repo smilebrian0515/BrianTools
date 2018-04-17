@@ -40,51 +40,59 @@ namespace TestMakeTools
             Console.WriteLine("(10)");
             Console.Write("輸入想執行的方法數字: ");
             string input = Console.ReadLine();
-
-            switch (input)
+            while (!input.Equals("-1"))
             {
-                case "1":
-                    getNBATeamName();
-                    break;
-                case "2":
-                    getDetail();
-                    break;
-                case "3":
-                    //testOutExcel();
-                    break;
-                case "4":
-                    getSitemap("");
-                    break;
-                case "5":
-                    List<string> URLls = new List<string>();
-                    Console.Write("請輸入網站網址: ");
-                    string url = Console.ReadLine();
-                    while (!url.Equals("-1"))
-                    {
-                        URLls.Add(url);
+                switch (input)
+                {
+                    case "1":
+                        getNBATeamName();
+                        break;
+                    case "2":
+                        getDetail();
+                        break;
+                    case "3":
+                        //testOutExcel();
+                        break;
+                    case "4":
+                        getSitemapForTainan("", "div form a", "#sitecontent ul li a", "");
+                        break;
+                    case "5":
+                        List<string> URLls = new List<string>();
                         Console.Write("請輸入網站網址: ");
-                        url = Console.ReadLine();
-                    }
-                    foreach (string item in URLls)
-                    {
-                        getSitemap(item);
-                    }
-                    break;
-                case "6":
-                    break;
-                case "7":
-                    break;
-                case "8":
-                    break;
-                case "9":
-                    break;
-                case "10":
-                    break;
+                        string url = Console.ReadLine();
+                        while (!url.Equals("-1"))
+                        {
+                            URLls.Add(url);
+                            Console.Write("請輸入網站網址: ");
+                            url = Console.ReadLine();
+                        }
+                        foreach (string item in URLls)
+                        {
+                            getSitemapForTainan(item, "div form a", "#sitecontent ul li a", "");
+                        }
+                        break;
+                    case "6":
+                        Console.Write("請輸入上方導覽的Query指令: ");
+                        string topQuery = Console.ReadLine();
+                        Console.Write("請輸入內容的Query指令: ");
+                        string contentQuery = Console.ReadLine();
+                        Console.Write("請輸入下方導覽的Query指令: ");
+                        string foot = Console.ReadLine();
+
+                        break;
+                    case "7":
+                        break;
+                    case "8":
+                        break;
+                    case "9":
+                        break;
+                    case "10":
+                        break;
+                }
+                input = Console.ReadLine();
             }
 
-
             Console.WriteLine("Finish.");
-
             string str = Console.ReadLine();
         }
 
@@ -169,7 +177,7 @@ namespace TestMakeTools
             FS.Close();
         }
 
-        static void getSitemap(string url)
+        static void getSitemap(string url, string topQuery, string contentQuery, string footQuery)
         {
             if (url.Equals(""))
             {
@@ -182,8 +190,8 @@ namespace TestMakeTools
             //{
             //    Console.WriteLine(item);
             //}
-            List<string> topText = WebCrawler(url, "div form a", "value");
-            List<string> topLink = WebCrawler(url, "div form a", "href");
+            List<string> topText = WebCrawler(url, topQuery, "value");
+            List<string> topLink = WebCrawler(url, topQuery, "href");
             //foreach (string item in topText)
             //{
             //    Console.WriteLine(item);
@@ -199,8 +207,8 @@ namespace TestMakeTools
             //{
             //    Console.WriteLine(item);
             //}
-            List<string> contentText = WebCrawler(url, "#sitecontent ul li a", "value");
-            List<string> contentLink = WebCrawler(url, "#sitecontent ul li a", "href");
+            List<string> contentText = WebCrawler(url, contentQuery, "value");
+            List<string> contentLink = WebCrawler(url, contentQuery, "href");
             //foreach (string item in contentText)
             //{
             //    Console.WriteLine(item);
@@ -212,6 +220,24 @@ namespace TestMakeTools
             List<List<string>> content = new List<List<string>>();
             content.Add(contentText);
             content.Add(contentLink);
+
+            //foreach (string item in GetHtmlBySelector("ul li a", htmlContent))
+            //{
+            //    Console.WriteLine(item);
+            //}
+            List<string> footText = WebCrawler(url, footQuery, "value");
+            List<string> footLink = WebCrawler(url, footQuery, "href");
+            //foreach (string item in contentText)
+            //{
+            //    Console.WriteLine(item);
+            //}
+            //foreach (string item in contentLink)
+            //{
+            //    Console.WriteLine(item);
+            //}
+            List<List<string>> foot = new List<List<string>>();
+            foot.Add(footText);
+            foot.Add(footLink);
 
             //foreach (string item in GetHtmlBySelector("a", htmlContent))
             //{
@@ -229,6 +255,7 @@ namespace TestMakeTools
             //    Console.WriteLine(getAttribute(item, "alt"));
             //}
             //getAttribute();
+            /*
             List<string> footAlt = new List<string>();
             List<string> footLink = new List<string>();
             foreach (string item in GetHtmlBySelector("a", htmlContent))
@@ -251,7 +278,7 @@ namespace TestMakeTools
             List<List<string>> foot = new List<List<string>>();
             foot.Add(footAlt);
             foot.Add(footLink);
-
+            */
             ls.Add(top);
             ls.Add(content);
             ls.Add(foot);
@@ -262,7 +289,7 @@ namespace TestMakeTools
             //{
             //    Console.WriteLine(item);
             //}
-            if (topText.Count == 0 && contentText.Count == 0 && footAlt.Count == 0)
+            if (topText.Count == 0 && contentText.Count == 0 && footText.Count == 0)
             {
                 Console.WriteLine("無資料，網址" + url + "可能為錯誤頁面。");
             }
@@ -275,6 +302,67 @@ namespace TestMakeTools
             }
             
         }
+
+        static void getSitemapForTainan(string url, string topQuery, string contentQuery, string footQuery)
+        {
+            if (url.Equals(""))
+            {
+                Console.Write("請輸入該網站的網站導覽網址:");
+                url = Console.ReadLine();
+            }
+            string htmlContent = GetContent(url);
+            List<List<List<string>>> ls = new List<List<List<string>>>();
+
+            List<string> topText = WebCrawler(url, topQuery, "value");
+            List<string> topLink = WebCrawler(url, topQuery, "href");
+            List<List<string>> top = new List<List<string>>();
+            top.Add(topText);
+            top.Add(topLink);
+
+            List<string> contentText = WebCrawler(url, contentQuery, "value");
+            List<string> contentLink = WebCrawler(url, contentQuery, "href");
+            List<List<string>> content = new List<List<string>>();
+            content.Add(contentText);
+            content.Add(contentLink);
+
+            List<string> footAlt = new List<string>();
+            List<string> footLink = new List<string>();
+            foreach (string item in GetHtmlBySelector("a", htmlContent))
+            {
+                foreach (string str in GetHtmlBySelector("a img", htmlContent))
+                {
+                    if (item.Contains(str))
+                    {
+                        footLink.Add(getAttribute(item, "href"));
+                        break;
+                    }
+                }
+            }
+            foreach (string item in GetHtmlBySelector("a img", htmlContent))
+            {
+                footAlt.Add(getAttribute(item, "alt"));
+            }
+            List<List<string>> foot = new List<List<string>>();
+            foot.Add(footAlt);
+            foot.Add(footLink);
+            
+            ls.Add(top);
+            ls.Add(content);
+            ls.Add(foot);
+
+            if (topText.Count == 0 && contentText.Count == 0 && footAlt.Count == 0)
+            {
+                Console.WriteLine("無資料，網址" + url + "可能為錯誤頁面。");
+            }
+            else
+            {
+                string siteName = getAttribute(GetHtmlBySelector("title", htmlContent).Where(o => o == o).First(), "value");
+                Console.WriteLine("成功爬到 " + siteName + " 的資料，開始產生EXCEL。");
+                NPOIToExcel(ls, siteName);
+            }
+
+        }
+
 
         static void getDetail()
         {
