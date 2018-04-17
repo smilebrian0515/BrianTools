@@ -21,7 +21,7 @@ using HtmlAgilityPack;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace Brian_Test
+namespace TestMakeTools
 {
     class Program
     {
@@ -76,70 +76,23 @@ namespace Brian_Test
         }
 
 
-        public static void NPOIToExcel(List<List<List<string>>> ls,string siteName)
+        public static void NPOIToExcel(List<List<List<string>>> ls, string siteName)
         {
 
-            IWorkbook wb = new HSSFWorkbook();
-            HSSFSheet sheet1 = (HSSFSheet)wb.CreateSheet(siteName);
-
-            //HSSFWorkbook wb = new HSSFWorkbook();
-            //HSSFSheet sheet1 = (HSSFSheet)wb.CreateSheet("權限表");
+            IWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sheet1 = (XSSFSheet)wb.CreateSheet(siteName);
 
             MemoryStream ms = new MemoryStream();
-            //MemoryStream ms = new MemoryStream();
 
-            HSSFRow row = null;
-            //HSSFRow row = null;
+            XSSFRow row = null;
 
             //設定儲存格樣式
-            HSSFCell cell = null;
-            HSSFCellStyle wrapStyle = (HSSFCellStyle)wb.CreateCellStyle();
+            XSSFCell cell = null;
+            XSSFCellStyle wrapStyle = (XSSFCellStyle)wb.CreateCellStyle();
 
-            ////設定儲存格樣式
-            //HSSFCell cell = null;
-            //HSSFCellStyle wrapStyle = null;
-            ////HSSFCellStyle wrapStyle10 = null;
-            ////HSSFCellStyle wrapStyleR10 = null;
-            ////HSSFCellStyle colorStyle = null;
-            ////HSSFCellStyle RightStyle = null;
-            ////HSSFCellStyle CenterStyle = null;
-            //wrapStyle = (HSSFCellStyle)wb.CreateCellStyle();
-            ////wrapStyle10 = (HSSFCellStyle)wb.CreateCellStyle();
-            ////wrapStyleR10 = (HSSFCellStyle)wb.CreateCellStyle();
-            ////colorStyle = (HSSFCellStyle)wb.CreateCellStyle();
-            ////RightStyle = (HSSFCellStyle)wb.CreateCellStyle();
-
-            HSSFFont font1 = (HSSFFont)wb.CreateFont();
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
             //字體尺寸
             font1.FontHeightInPoints = 12;
-
-            //HSSFFont font1 = (HSSFFont)wb.CreateFont();
-            ////字體尺寸
-            //font1.FontHeightInPoints = 12;
-
-            //HSSFFont font10 = (HSSFFont)wb.CreateFont();
-            ////字體尺寸
-            //font10.FontHeightInPoints = 10;
-            //font10.FontName = "細明體";
-
-
-            ////RightStyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////RightStyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////RightStyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////RightStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////RightStyle.Alignment = HorizontalAlignment.Right;
-            ////RightStyle.DataFormat = HSSFDataFormat.GetBuiltinFormat("#,##0");
-            //////RightStyle.SetFont(font1);
-
-            ////CenterStyle = (HSSFCellStyle)wb.CreateCellStyle();
-            ////CenterStyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////CenterStyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////CenterStyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////CenterStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////CenterStyle.Alignment = HorizontalAlignment.Center;
-            ////CenterStyle.WrapText = true;
-            ////CenterStyle.VerticalAlignment = VerticalAlignment.Center;
-            ////CenterStyle.SetFont(font1);
 
             wrapStyle.SetFont(font1);
             wrapStyle.WrapText = true;
@@ -147,41 +100,8 @@ namespace Brian_Test
             wrapStyle.BorderLeft = BorderStyle.Thin;
             wrapStyle.BorderBottom = BorderStyle.Thin;
             wrapStyle.BorderRight = BorderStyle.Thin;
-            wrapStyle.FillForegroundColor = HSSFColor.Red.Index;
             wrapStyle.VerticalAlignment = VerticalAlignment.Center;
 
-            ////wrapStyle.SetFont(font1);
-            //wrapStyle.WrapText = true;
-            //wrapStyle.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-            //wrapStyle.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
-            //wrapStyle.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-            //wrapStyle.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-            //wrapStyle.FillForegroundColor = HSSFColor.Red.Index;
-            //wrapStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;
-
-            ////wrapStyle10.SetFont(font10);
-            ////wrapStyle10.WrapText = true;
-            ////wrapStyle10.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyle10.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyle10.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyle10.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyle10.FillForegroundColor = HSSFColor.Red.Index;
-            ////wrapStyle10.VerticalAlignment = VerticalAlignment.Center;
-
-
-            ////wrapStyleR10.SetFont(font10);
-            ////wrapStyleR10.WrapText = true;
-            ////wrapStyleR10.BorderTop = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyleR10.BorderLeft = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyleR10.BorderBottom = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyleR10.BorderRight = NPOI.SS.UserModel.BorderStyle.Thin;
-            ////wrapStyleR10.FillForegroundColor = HSSFColor.Red.Index;
-            ////wrapStyleR10.Alignment = HorizontalAlignment.Right;
-            ////wrapStyleR10.VerticalAlignment = VerticalAlignment.Center;
-
-            ////colorStyle.FillPattern = FillPattern.SolidForeground;
-            ////colorStyle.FillBackgroundColor = HSSFColor.Red.Index;
-            ////colorStyle.FillForegroundColor = 10;
             sheet1.PrintSetup.Landscape = true;
             sheet1.ForceFormulaRecalculation = true;
 
@@ -189,12 +109,12 @@ namespace Brian_Test
             int field = 0;
             int rowPartIndex = 0;
 
-            row = (HSSFRow)sheet1.CreateRow(rowIndex);
-            cell = (HSSFCell)row.CreateCell(0);
+            row = (XSSFRow)sheet1.CreateRow(rowIndex);
+            cell = (XSSFCell)row.CreateCell(0);
             cell.CellStyle = wrapStyle;  //指定樣式
             cell.SetCellType(CellType.String);
             cell.SetCellValue("頁面名稱");
-            cell = (HSSFCell)row.CreateCell(1);
+            cell = (XSSFCell)row.CreateCell(1);
             cell.CellStyle = wrapStyle;  //指定樣式
             cell.SetCellType(CellType.String);
             cell.SetCellValue("連結");
@@ -203,10 +123,10 @@ namespace Brian_Test
 
             foreach (List<List<string>> part in ls)
             {
-                int size = part.First().Count;
+                int size = part.First().Count + rowPartIndex;
                 for (int i = rowPartIndex; i < size; i++)
                 {
-                    row = (HSSFRow)sheet1.CreateRow(i);
+                    row = (XSSFRow)sheet1.CreateRow(i);
                 }
 
                 field = 0;
@@ -216,8 +136,8 @@ namespace Brian_Test
                     rowIndex = rowPartIndex;
                     foreach (string str in part1)
                     {
-                        row = (HSSFRow)sheet1.GetRow(rowIndex);
-                        cell = (HSSFCell)row.CreateCell(field);
+                        row = (XSSFRow)sheet1.GetRow(rowIndex);
+                        cell = (XSSFCell)row.CreateCell(field);
                         cell.CellStyle = wrapStyle;  //指定樣式
                         //cell.SetCellType(CellType.String);
                         cell.SetCellValue(str);
@@ -228,107 +148,12 @@ namespace Brian_Test
                 rowPartIndex = rowIndex;
             }
 
-            //DataTable dt = pDataTable; //準備好要寫入的資料
-            //int rowIndex = 0;
-            //int dtSize = dt.Rows.Count;
-
-
-            //row = (HSSFRow)sheet1.CreateRow(rowIndex);
-            //cell = (HSSFCell)row.CreateCell(0);
-            //cell.CellStyle = wrapStyle;  //指定樣式
-            //cell.SetCellType(CellType.String);
-            //cell.SetCellValue("站台");
-            //cell = (HSSFCell)row.CreateCell(1);
-            //cell.CellStyle = wrapStyle;  //指定樣式
-            //cell.SetCellType(CellType.String);
-            //cell.SetCellValue("單位");
-            //cell = (HSSFCell)row.CreateCell(2);
-            //cell.CellStyle = wrapStyle;  //指定樣式
-            //cell.SetCellType(CellType.String);
-            //cell.SetCellValue("帳號");
-            //cell = (HSSFCell)row.CreateCell(3);
-            //cell.CellStyle = wrapStyle;  //指定樣式
-            //cell.SetCellType(CellType.String);
-            //cell.SetCellValue("姓名");
-            //cell = (HSSFCell)row.CreateCell(4);
-            //cell.CellStyle = wrapStyle;  //指定樣式
-            //cell.SetCellType(CellType.String);
-            //cell.SetCellValue("系統權限");
-            //rowIndex++;
-
-            //try
-            //{
-            //    for (int i = 0; i < dtSize; i++) //逐筆資料寫入
-            //    {
-
-            //        string field1 = dt.Rows[i]["站台"].ToString().Trim();
-            //        string field2 = dt.Rows[i]["單位"].ToString().Trim();
-            //        string field3 = dt.Rows[i]["帳號"].ToString().Trim();
-            //        string field4 = dt.Rows[i]["姓名"].ToString().Trim();
-            //        string field5 = dt.Rows[i]["權限"].ToString().Trim();
-
-            //        row = (HSSFRow)sheet1.CreateRow(rowIndex); //新的一行
-            //        cell = (HSSFCell)row.CreateCell(0); //第幾列 站台
-            //        cell.CellStyle = wrapStyle;  //指定樣式
-            //        cell.SetCellType(CellType.String); //設定欄位格式
-            //        cell.SetCellValue(field1);   //寫入值
-            //        cell = (HSSFCell)row.CreateCell(1); //單位
-            //        cell.CellStyle = wrapStyle;
-            //        cell.SetCellType(CellType.String);
-            //        cell.SetCellValue(field2);
-            //        cell = (HSSFCell)row.CreateCell(2); //帳號
-            //        cell.CellStyle = wrapStyle;
-            //        cell.SetCellType(CellType.String);
-            //        cell.SetCellValue(field3);
-            //        cell = (HSSFCell)row.CreateCell(3); //姓名
-            //        cell.CellStyle = wrapStyle;
-            //        cell.SetCellType(CellType.String);
-            //        cell.SetCellValue(field4);
-            //        cell = (HSSFCell)row.CreateCell(4); //系統權限
-            //        cell.CellStyle = wrapStyle;
-            //        if (field5.Length > 30000)
-            //        {
-            //            cell.SetCellType(CellType.String);
-            //            cell.SetCellValue("系統管理者");
-            //        }
-            //        else
-            //        {
-            //            cell.SetCellType(CellType.String);
-            //            cell.SetCellValue(field5);
-            //        }
-
-            //        rowIndex++;
-            //    }
-
-            //}
-            //catch (Exception e)
-            //{
-            //    sheet1.GetRow(1).GetCell(0).SetCellValue("發生錯誤：" + e.Message);
-            //}
             sheet1.SetColumnWidth(0, 20 * 256);
             sheet1.SetColumnWidth(1, 30 * 256);
-            //sheet1.SetColumnWidth(2, 20 * 256);
-            //sheet1.SetColumnWidth(4, 30 * 256);
-
             //產生檔案
-            //FileStream FS = new FileStream(Path.Combine("D:\\Brian\\", siteName+".xlsx"), FileMode.Create, System.IO.FileAccess.Write);
-            FileStream FS = File.Create(siteName+".xlsx");
+            FileStream FS = File.Create("D:\\Brian\\" + siteName + ".xlsx");
             wb.Write(FS);
             FS.Close();
-
-            ////產生下載的檔案
-            //wb.Write(ms);
-            //wb = null;
-            //ms.Close();
-            //ms.Dispose();
-            //oPage.Response.Buffer = true;
-            //oPage.Response.Clear();
-            //oPage.Response.ContentType = "application/octet-stream";
-            //oPage.Response.AddHeader("Content-Disposition", "attachment;filename=\"" + FileName + ".xls\"");
-            //oPage.Response.BinaryWrite(ms.ToArray());
-            //oPage.Response.Flush();
-            //oPage.Response.End();
-        
         }
 
         static void getSitemap()
@@ -336,7 +161,7 @@ namespace Brian_Test
             Console.Write("請輸入該網站的網站導覽網址:");
             string url = Console.ReadLine();
             string htmlContent = GetContent(url);
-            List<List<List<string>>> ls = new List<List<List<string>>>(); 
+            List<List<List<string>>> ls = new List<List<List<string>>>();
             //foreach (string item in GetHtmlBySelector("div form a", htmlContent))
             //{
             //    Console.WriteLine(item);
@@ -371,7 +196,7 @@ namespace Brian_Test
             List<List<string>> content = new List<List<string>>();
             content.Add(contentText);
             content.Add(contentLink);
-            
+
             //foreach (string item in GetHtmlBySelector("a", htmlContent))
             //{
             //    foreach (string str in GetHtmlBySelector("a img", htmlContent))
@@ -499,7 +324,7 @@ namespace Brian_Test
             return ls;
         }
 
-        public static string getAttribute(string result,string attr)
+        public static string getAttribute(string result, string attr)
         {
             int attributeLength = attr.Length;
             string str = string.Empty;
