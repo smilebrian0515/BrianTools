@@ -78,11 +78,12 @@ namespace TestMakeTools
                         string contentQuery = Console.ReadLine();
                         Console.Write("請輸入下方導覽的Query指令: ");
                         string foot = Console.ReadLine();
-
                         break;
                     case "7":
+                        make0419();
                         break;
                     case "8":
+                        toVictoria();
                         break;
                     case "9":
                         break;
@@ -94,6 +95,341 @@ namespace TestMakeTools
 
             Console.WriteLine("Finish.");
             string str = Console.ReadLine();
+        }
+        public static void toVictoria()
+        {
+            DataTable dt = loadExcel("test.xlsx");
+            DataTable dt2 = loadExcel("test2.xlsx");
+            int cellSize = dt.Columns.Count;
+            int cellSize2 = dt2.Columns.Count;
+
+            if (cellSize != cellSize2)
+            {
+                Console.WriteLine("兩個檔案的欄位數量不一致，請確認一下EXCEL，並通知程式撰寫者。");
+                return;
+            }
+            Boolean checkFile = true;
+            for (int i = 0; i < cellSize; i++)
+            {
+                if (!dt.Columns[i].ColumnName.Equals(dt2.Columns[i].ColumnName))
+                {
+                    checkFile = false;
+                    break;
+                }
+            }
+            if (!checkFile)
+            {
+                Console.WriteLine("兩個檔案的欄位內容不一致，請確認一下EXCEL，並通知程式撰寫者。");
+                Console.WriteLine("test.xlsx\t\ttest2.xlsx");
+                for (int i = 0; i < cellSize; i++)
+                {
+                    Console.WriteLine(dt.Columns[i].ColumnName + "\t\t" + dt2.Columns[i].ColumnName);
+                }
+                return;
+            }
+
+            DataTable NewData = new DataTable();
+            DataTable updateData = new DataTable();
+            DataTable deleteData = new DataTable();
+
+            for (int i = 0; i < cellSize; i++)
+            {
+                NewData.Columns.Add(dt.Columns[i].ColumnName, typeof(String));
+                NewData.Columns[dt.Columns[i].ColumnName].MaxLength = 50;
+                NewData.Columns[dt.Columns[i].ColumnName].AllowDBNull = false;
+
+                updateData.Columns.Add(dt.Columns[i].ColumnName, typeof(String));
+                updateData.Columns[dt.Columns[i].ColumnName].MaxLength = 50;
+                updateData.Columns[dt.Columns[i].ColumnName].AllowDBNull = false;
+
+                deleteData.Columns.Add(dt.Columns[i].ColumnName, typeof(String));
+                deleteData.Columns[dt.Columns[i].ColumnName].MaxLength = 50;
+                deleteData.Columns[dt.Columns[i].ColumnName].AllowDBNull = false;
+            }
+
+            int dt1Index = 0;
+            int dt2Index = 0;
+            
+            while (!(dt.Rows.Count == dt1Index + 1 && dt2.Rows.Count == dt2Index + 1))
+            {
+                string D = dt.Rows[dt1Index].ItemArray[3].ToString();
+                string D2 = dt2.Rows[dt2Index].ItemArray[3].ToString();
+                string H = dt.Rows[dt1Index].ItemArray[7].ToString();
+                string H2 = dt2.Rows[dt2Index].ItemArray[7].ToString();
+                string S = dt.Rows[dt1Index].ItemArray[18].ToString();
+                string S2 = dt2.Rows[dt2Index].ItemArray[18].ToString();
+
+                if (D.Equals(D2) && H.Equals(H2) && S.Equals(S2)) //資料相同
+                {
+                    dt1Index++;
+                    dt2Index++;
+                }
+                else
+                {
+                    if (D.Equals(D2)) //資料更新
+                    {
+                        DataRow dtRow = updateData.NewRow();
+                        for (int j = 0; j < cellSize; j++)
+                        {
+                            dtRow[dt.Columns[3].ColumnName] = D2;
+                            dtRow[dt.Columns[7].ColumnName] = H2;
+                            dtRow[dt.Columns[18].ColumnName] = S2;
+                        }
+                        updateData.Rows.Add(dtRow);
+                        continue;
+                    }
+                    int addIndexNum = 0; //資料新增
+                    for (int i = 1; i <= 10; i++) //檢查新增幾筆資料
+                    {
+                        if (D.Equals(dt2.Rows[dt2Index+i].ItemArray[3].ToString()))
+                        {
+                            addIndexNum = i;
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < addIndexNum; i++) //將資料丟到DT
+                    {
+                        DataRow dtRow = NewData.NewRow();
+                        dtRow[dt.Columns[3].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[3].ToString();
+                        dtRow[dt.Columns[7].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[7].ToString();
+                        dtRow[dt.Columns[18].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[18].ToString();
+                        NewData.Rows.Add(dtRow);
+                    }
+                    if (addIndexNum > 0)
+                    {
+                        dt2Index += addIndexNum;
+                        continue;
+                    }
+                    if (dt.Rows.Count == dt1Index + 1 && dt2.Rows.Count == dt2Index + 1)
+                    {
+
+                    }
+
+
+                }
+
+
+
+                dt1Index++;
+                dt2Index++;
+            }
+
+
+
+            foreach (DataRow row1 in dt.Rows)
+            {
+                foreach (string str1 in row1.ItemArray)
+                {
+                    Console.Write(str1);
+                }
+                Console.Write("\n");
+            }
+            Boolean first = true;
+            //int cellSize = dt2.Columns.Count;
+            foreach (DataRow row2 in dt2.Rows)
+            {
+                if (first)
+                {
+                    first = false;
+                    Console.Write(row2.ItemArray.Count());
+                }
+                for (int j = 0; j < cellSize; j++)
+                {
+                    Console.Write(row2.ItemArray[j]);
+                }
+
+                //foreach (string str2 in row2.ItemArray)
+                //{
+                //    Console.Write(str2);
+                //}
+                Console.Write("\n");
+            }
+
+
+            /*
+            DataTable dt = new DataTable("TempTable");
+            dt.Columns.Add("D", typeof(String));
+            dt.Columns.Add("H", typeof(String));
+            dt.Columns.Add("S", typeof(String));
+            */
+        }
+
+
+        public static DataTable loadExcel(string FileName)
+        {
+            IWorkbook wk;
+            using (FileStream fs = new FileStream(".\\" + FileName, FileMode.Open, FileAccess.ReadWrite))
+            {
+                wk = new XSSFWorkbook(fs);
+            }
+            XSSFSheet sheet = (XSSFSheet)wk.GetSheet("TestSheet");
+            XSSFRow row = (XSSFRow)sheet.GetRow(0);
+            int lastRow = sheet.LastRowNum;
+            int lastCell = row.LastCellNum;
+            DataTable dt = new DataTable();
+            //DataRow dtRow = dt.NewRow();
+            for (int i = 0; i < lastCell; i++)
+            {
+                string str = Object.Equals(row.GetCell(i), null) ? " " : row.GetCell(i).ToString();
+                dt.Columns.Add(str, typeof(String));
+                dt.Columns[str].MaxLength = 50;
+                dt.Columns[str].AllowDBNull = false;
+            }
+
+            for (int i = 1; i <= lastRow; i++)
+            {
+                DataRow dtRow = dt.NewRow();
+                row = (XSSFRow)sheet.GetRow(i);
+                for (int j = 0; j < lastCell; j++)
+                {
+                    string str = Object.Equals(row.GetCell(j), null) ? " " : row.GetCell(j).ToString();
+                    dtRow[sheet.GetRow(0).GetCell(j).ToString()] = str;
+                    //Console.Write(str + " ");
+                }
+                dt.Rows.Add(dtRow);
+                //Console.Write("\n");
+            }
+            /*
+            foreach (DataRow dataRow in dt.Rows)
+            {
+                foreach (var item in dataRow.ItemArray)
+                {
+                    Console.Write(item);
+                }
+                Console.Write("\n");
+            }
+            */
+            return dt;
+        }
+
+        public static void make0419()
+        {
+            string str = string.Empty;
+            
+            List<string> ls = getSite();
+            Console.Write(ls.Count);
+            str += "<td width=\"50%\" valign=\"top\"><table width=\"100%\" border=\"0\" cellpadding=\"1\" bgcolor=\"#aaaaaa\" class='search_Select_Style' id=\"Table3\">";
+            for (int i=0; i<ls.Count; i++)
+            {
+
+                if (i%2==0)
+                {
+                    str += "<tr>\n";
+                }
+
+
+                str += "<td width=\"25%\" align=\"center\" valign=\"middle\" bgcolor=\"#D3E658\"><p align=\"center\">" + ls[i] + "</p></td>";
+                str += "<td valign=\"top\" bgcolor=\"#FFFFFF\"><a href=\"#\"><img src=\"download.png\" width=\"64\" height=\"64\" /></a></td>";
+                str += "<td valign=\"top\" bgcolor=\"#FFFFFF\"></td>\n";
+                if (i%2==1)
+                {
+                    str += "</tr>";
+                }
+                
+            }
+            str += "</table>\n";
+            str += "</td>\n";
+
+
+            using (StreamWriter outputFile = new StreamWriter(@"D:\\Brian\\WriteLine.txt", true))
+            {
+                outputFile.WriteLine(str);
+            }
+        }
+
+        public static List<string> getSite()
+        {
+            List<string> ls = new List<string>();
+            ls.Add("主計處 ");
+            ls.Add("政風處 ");
+            ls.Add("財政處 ");
+            ls.Add("法制處 ");
+            ls.Add("秘書處 ");
+            ls.Add("新聞及國際關係處 ");
+            ls.Add("民族事務委員會");
+            ls.Add("民政局 ");
+            ls.Add("農業局 ");
+            ls.Add("勞工局 ");
+            ls.Add("經濟發展局 ");
+            ls.Add("水利局 ");
+            ls.Add("動物防疫保護處 ");
+            ls.Add("臺南市市場處 ");
+            ls.Add("漁港及近海管理所 ");
+            ls.Add("區公所-安定區 ");
+            ls.Add("區公所-安南區 ");
+            ls.Add("區公所-新化區 ");
+            ls.Add("區公所-學甲區 ");
+            ls.Add("區公所-北門區 ");
+            ls.Add("區公所-七股區 ");
+            ls.Add("區公所-大內區 ");
+            ls.Add("區公所-東山區 ");
+            ls.Add("區公所-關廟區 ");
+            ls.Add("區公所-官田區 ");
+            ls.Add("區公所-後壁區 ");
+            ls.Add("區公所-佳里區 ");
+            ls.Add("區公所-將軍區 ");
+            ls.Add("區公所-龍崎區 ");
+            ls.Add("區公所-南化區 ");
+            ls.Add("區公所-楠西區 ");
+            ls.Add("區公所-山上區 ");
+            ls.Add("區公所-北區");
+            ls.Add("區公所-下營區");
+            ls.Add("區公所-新營區 ");
+            ls.Add("區公所-鹽水區 ");
+            ls.Add("區公所-左鎮區");
+            ls.Add("戶政事務所-安平戶政事務所 ");
+            ls.Add("戶政事務所-白河戶政事務所 ");
+            ls.Add("戶政事務所-官田戶政事務所 ");
+            ls.Add("戶政事務所-歸仁戶政事務所 ");
+            ls.Add("戶政事務所-佳里戶政事務所 ");
+            ls.Add("戶政事務所-仁德戶政事務所 ");
+            ls.Add("戶政事務所-善化戶政事務所 ");
+            ls.Add("戶政事務所-新化戶政事務所 ");
+            ls.Add("戶政事務所-新營戶政事務所 ");
+            ls.Add("戶政事務所-學甲戶政事務所 ");
+            ls.Add("戶政事務所-安南戶政事務所 ");
+            ls.Add("戶政事務所-府東戶政事務所 ");
+            ls.Add("戶政事務所-麻豆戶政事務所 ");
+            ls.Add("戶政事務所-玉井戶政事務所 ");
+            ls.Add("戶政事務所-永康戶政事務所 ");
+            ls.Add("衛生所-安南區 ");
+            ls.Add("衛生所-安平區 ");
+            ls.Add("衛生所-東區 ");
+            ls.Add("衛生所-北區 ");
+            ls.Add("衛生所-南區 ");
+            ls.Add("衛生所-中西區 ");
+            ls.Add("衛生所-安定區 ");
+            ls.Add("衛生所-將軍區 ");
+            ls.Add("衛生所-七股區 ");
+            ls.Add("衛生所-佳里區 ");
+            ls.Add("衛生所-學甲區 ");
+            ls.Add("衛生所-新化區 ");
+            ls.Add("衛生所-西港區 ");
+            ls.Add("衛生所-後壁區 ");
+            ls.Add("衛生所-新市區 ");
+            ls.Add("衛生所-下營區 ");
+            ls.Add("衛生所-仁德區 ");
+            ls.Add("衛生所-歸仁區 ");
+            ls.Add("衛生所-關廟區 ");
+            ls.Add("衛生所-官田區 ");
+            ls.Add("衛生所-六甲區 ");
+            ls.Add("衛生所-柳營區 ");
+            ls.Add("衛生所-麻豆區 ");
+            ls.Add("衛生所-楠西區 ");
+            ls.Add("衛生所-南化區 ");
+            ls.Add("衛生所-白河區 ");
+            ls.Add("衛生所-北門區 ");
+            ls.Add("衛生所-善化區 ");
+            ls.Add("衛生所-山上區 ");
+            ls.Add("衛生所-新營區 ");
+            ls.Add("衛生所-左鎮區 ");
+            ls.Add("衛生所-大內區 ");
+            ls.Add("衛生所-東山區 ");
+            ls.Add("衛生所-玉井區 ");
+            ls.Add("衛生所-永康區 ");
+            ls.Add("衛生所-鹽水區 ");
+
+            return ls;
         }
 
 
@@ -353,6 +689,10 @@ namespace TestMakeTools
             if (topText.Count == 0 && contentText.Count == 0 && footAlt.Count == 0)
             {
                 Console.WriteLine("無資料，網址" + url + "可能為錯誤頁面。");
+                using(StreamWriter outputFile = new StreamWriter(@"D:\\Brian\\WriteLine.txt", true))
+                {
+                    outputFile.WriteLine("無資料，網址" + url + "可能為錯誤頁面。");
+                }
             }
             else
             {
