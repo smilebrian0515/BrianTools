@@ -96,12 +96,20 @@ namespace TestMakeTools
             Console.WriteLine("Finish.");
             string str = Console.ReadLine();
         }
+
         public static void toVictoria()
         {
             DataTable dt = loadExcel("test.xlsx");
             DataTable dt2 = loadExcel("test2.xlsx");
             int cellSize = dt.Columns.Count;
             int cellSize2 = dt2.Columns.Count;
+            int debugField1 = 1; //3
+            int debugField2 = 2; //7
+            int debugField3 = 3; //18
+            int debugRange = 5;
+
+
+
 
             if (cellSize != cellSize2)
             {
@@ -150,14 +158,14 @@ namespace TestMakeTools
             int dt1Index = 0;
             int dt2Index = 0;
             
-            while (!(dt.Rows.Count == dt1Index + 1 && dt2.Rows.Count == dt2Index + 1))
+            while (!(dt.Rows.Count == dt1Index + 1 || dt2.Rows.Count == dt2Index + 1)) //還沒到底前的處理
             {
-                string D = dt.Rows[dt1Index].ItemArray[3].ToString();
-                string D2 = dt2.Rows[dt2Index].ItemArray[3].ToString();
-                string H = dt.Rows[dt1Index].ItemArray[7].ToString();
-                string H2 = dt2.Rows[dt2Index].ItemArray[7].ToString();
-                string S = dt.Rows[dt1Index].ItemArray[18].ToString();
-                string S2 = dt2.Rows[dt2Index].ItemArray[18].ToString();
+                string D = dt.Rows[dt1Index].ItemArray[debugField1].ToString();
+                string D2 = dt2.Rows[dt2Index].ItemArray[debugField1].ToString();
+                string H = dt.Rows[dt1Index].ItemArray[debugField2].ToString();
+                string H2 = dt2.Rows[dt2Index].ItemArray[debugField2].ToString();
+                string S = dt.Rows[dt1Index].ItemArray[debugField3].ToString();
+                string S2 = dt2.Rows[dt2Index].ItemArray[debugField3].ToString();
 
                 if (D.Equals(D2) && H.Equals(H2) && S.Equals(S2)) //資料相同
                 {
@@ -171,18 +179,21 @@ namespace TestMakeTools
                         DataRow dtRow = updateData.NewRow();
                         for (int j = 0; j < cellSize; j++)
                         {
-                            dtRow[dt.Columns[3].ColumnName] = D2;
-                            //123
-                            dtRow[dt.Columns[7].ColumnName] = H2;
-                            dtRow[dt.Columns[18].ColumnName] = S2;
+                            dtRow[dt.Columns[debugField1].ColumnName] = D2;
+                            dtRow[dt.Columns[debugField2].ColumnName] = H2;
+                            dtRow[dt.Columns[debugField3].ColumnName] = S2;
                         }
                         updateData.Rows.Add(dtRow);
                         continue;
                     }
                     int addIndexNum = 0; //資料新增
-                    for (int i = 1; i <= 10; i++) //檢查新增幾筆資料
+                    for (int i = 1; i <= debugRange; i++) //檢查新增幾筆資料
                     {
-                        if (D.Equals(dt2.Rows[dt2Index+i].ItemArray[3].ToString()))
+                        if (dt2Index + i == dt2.Rows.Count) //到底了
+                        {
+                            break;
+                        }
+                        if (D.Equals(dt2.Rows[dt2Index+i].ItemArray[debugField1].ToString()))
                         {
                             addIndexNum = i;
                             break;
@@ -191,9 +202,9 @@ namespace TestMakeTools
                     for (int i = 0; i < addIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = NewData.NewRow();
-                        dtRow[dt.Columns[3].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[3].ToString();
-                        dtRow[dt.Columns[7].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[7].ToString();
-                        dtRow[dt.Columns[18].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[18].ToString();
+                        dtRow[dt.Columns[debugField1].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField1].ToString();
+                        dtRow[dt.Columns[debugField2].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField2].ToString();
+                        dtRow[dt.Columns[debugField3].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField3].ToString();
                         NewData.Rows.Add(dtRow);
                     }
                     if (addIndexNum > 0)
@@ -201,18 +212,31 @@ namespace TestMakeTools
                         dt2Index += addIndexNum;
                         continue;
                     }
-                    if (dt.Rows.Count == dt1Index + 1 && dt2.Rows.Count == dt2Index + 1)
-                    {
 
+                    int delIndexNum = 0; //資料刪除
+                    for (int i = 1; i <= debugRange; i++) //確認刪除幾筆資料
+                    {
+                        if (D2.Equals(dt.Rows[dt1Index + i].ItemArray[debugField1].ToString()))
+                        {
+                            delIndexNum = i;
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < delIndexNum; i++) //將資料丟到DT
+                    {
+                        DataRow dtRow = deleteData.NewRow();
+                        dtRow[dt.Columns[debugField1].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField1].ToString();
+                        dtRow[dt.Columns[debugField2].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField2].ToString();
+                        dtRow[dt.Columns[debugField3].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField3].ToString();
+                        deleteData.Rows.Add(dtRow);
+                    }
+                    if (delIndexNum > 0)
+                    {
+                        dt1Index += delIndexNum;
+                        continue;
                     }
 
-
                 }
-
-
-
-                dt1Index++;
-                dt2Index++;
             }
 
 
