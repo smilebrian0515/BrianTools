@@ -3978,25 +3978,28 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\brian_wu.STARGROUP\\.nuget\\packages\\": {},
+    "C:\\Users\\user\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
+    "restoreSettings": {
+      "hideWarningsAndErrors": true
+    },
     "restore": {
-      "projectUniqueName": "D:\\Brian\\BrianPlay\\Brian_Test\\Brian_Test\\Brian_Test.csproj",
+      "projectUniqueName": "E:\\gitLab\\BrianTool\\Brian_Test\\Brian_Test.csproj",
       "projectName": "Brian_Test",
-      "projectPath": "D:\\Brian\\BrianPlay\\Brian_Test\\Brian_Test\\Brian_Test.csproj",
-      "packagesPath": "C:\\Users\\brian_wu.STARGROUP\\.nuget\\packages\\",
-      "outputPath": "D:\\Brian\\BrianPlay\\Brian_Test\\Brian_Test\\obj\\",
+      "projectPath": "E:\\gitLab\\BrianTool\\Brian_Test\\Brian_Test.csproj",
+      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+      "outputPath": "E:\\gitLab\\BrianTool\\Brian_Test\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\brian_wu.STARGROUP\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
       ],

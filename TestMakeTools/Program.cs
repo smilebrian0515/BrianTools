@@ -177,13 +177,14 @@ namespace TestMakeTools
                     if (D.Equals(D2)) //資料更新
                     {
                         DataRow dtRow = updateData.NewRow();
-                        for (int j = 0; j < cellSize; j++)
-                        {
-                            dtRow[dt.Columns[debugField1].ColumnName] = D2;
-                            dtRow[dt.Columns[debugField2].ColumnName] = H2;
-                            dtRow[dt.Columns[debugField3].ColumnName] = S2;
-                        }
+                        //for (int j = 0; j < cellSize; j++)
+                        //{
+                        //    dtRow[dt.Columns[j].ColumnName] = dt2.Rows[dt2Index].ItemArray[j].ToString();
+                        //}
+                        dataFill(dt2, dtRow, dt2Index, 0);
                         updateData.Rows.Add(dtRow);
+                        dt1Index++;
+                        dt2Index++;
                         continue;
                     }
                     int addIndexNum = 0; //資料新增
@@ -202,9 +203,11 @@ namespace TestMakeTools
                     for (int i = 0; i < addIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = NewData.NewRow();
-                        dtRow[dt.Columns[debugField1].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField1].ToString();
-                        dtRow[dt.Columns[debugField2].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField2].ToString();
-                        dtRow[dt.Columns[debugField3].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField3].ToString();
+                        //for (int j = 0; j < cellSize; j++)
+                        //{
+                        //    dtRow[dt.Columns[j].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[j].ToString();
+                        //}
+                        dataFill(dt2, dtRow, dt2Index, i);
                         NewData.Rows.Add(dtRow);
                     }
                     if (addIndexNum > 0)
@@ -225,9 +228,14 @@ namespace TestMakeTools
                     for (int i = 0; i < delIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = deleteData.NewRow();
-                        dtRow[dt.Columns[debugField1].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField1].ToString();
-                        dtRow[dt.Columns[debugField2].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField2].ToString();
-                        dtRow[dt.Columns[debugField3].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField3].ToString();
+                        //for (int j = 0; j < cellSize; j++)
+                        //{
+                        //    dtRow[dt.Columns[j].ColumnName] = dt.Rows[dt1Index + i].ItemArray[j].ToString();
+                        //}
+                        dataFill(dt, dtRow, dt1Index, i);
+                        //dtRow[dt.Columns[debugField1].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField1].ToString();
+                        //dtRow[dt.Columns[debugField2].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField2].ToString();
+                        //dtRow[dt.Columns[debugField3].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField3].ToString();
                         deleteData.Rows.Add(dtRow);
                     }
                     if (delIndexNum > 0)
@@ -269,6 +277,33 @@ namespace TestMakeTools
                 //}
                 Console.Write("\n");
             }
+            Console.WriteLine("NewData:");
+            foreach (DataRow row1 in NewData.Rows)
+            {
+                foreach (string str1 in row1.ItemArray)
+                {
+                    Console.Write(str1);
+                }
+                Console.Write("\n");
+            }
+            Console.WriteLine("UpdateData:");
+            foreach (DataRow row1 in updateData.Rows)
+            {
+                foreach (string str1 in row1.ItemArray)
+                {
+                    Console.Write(str1);
+                }
+                Console.Write("\n");
+            }
+            Console.WriteLine("DeleteData:");
+            foreach (DataRow row1 in deleteData.Rows)
+            {
+                foreach (string str1 in row1.ItemArray)
+                {
+                    Console.Write(str1);
+                }
+                Console.Write("\n");
+            }
 
 
             /*
@@ -277,6 +312,15 @@ namespace TestMakeTools
             dt.Columns.Add("H", typeof(String));
             dt.Columns.Add("S", typeof(String));
             */
+        }
+
+        private static DataRow dataFill(DataTable dt, DataRow dtRow, int itemIndex, int index)
+        {
+            for (int j = 0; j < dt.Columns.Count; j++)
+            {
+                dtRow[dt.Columns[j].ColumnName] = dt.Rows[itemIndex + index].ItemArray[j].ToString();
+            }
+            return dtRow;
         }
 
 
