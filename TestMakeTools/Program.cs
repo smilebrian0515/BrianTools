@@ -31,11 +31,11 @@ namespace TestMakeTools
             Console.WriteLine("(1)爬蟲取得NBA隊名");
             Console.WriteLine("(2)爬蟲");
             Console.WriteLine("(3)Excel");
-            Console.WriteLine("(4)網站導覽，輸入一個");
+            Console.WriteLine("(4)網站導覽，輸入一個網址");
             Console.WriteLine("(5)網站導覽，一次輸入一整串，輸入-1後結束輸入，開始產生EXCEL");
-            Console.WriteLine("(6)");
-            Console.WriteLine("(7)");
-            Console.WriteLine("(8)");
+            Console.WriteLine("(6)爬蟲(未完成)");
+            Console.WriteLine("(7)串HTML語法");
+            Console.WriteLine("(8)比對EXCEL內容");
             Console.WriteLine("(9)");
             Console.WriteLine("(10)");
             Console.Write("輸入想執行的方法數字: ");
@@ -99,10 +99,17 @@ namespace TestMakeTools
 
         public static void toVictoria()
         {
+            //Console.Write("請輸入舊檔名(EX:test.xlsx):");
+            //string srcFile = Console.ReadLine();
+            //Console.Write("請輸入新檔名(EX:test2.xlsx):");
+            //string srcFile2 = Console.ReadLine();
+            //DataTable dt = loadExcel(srcFile);
+            //DataTable dt2 = loadExcel(srcFile2);
+
             DataTable dt = loadExcel("test.xlsx");
             DataTable dt2 = loadExcel("test2.xlsx");
             int cellSize = dt.Columns.Count;
-            int cellSize2 = dt2.Columns.Count;
+            //List<int> fieldList = new List<int>();
             int debugField1 = 1; //3
             int debugField2 = 2; //7
             int debugField3 = 3; //18
@@ -111,7 +118,7 @@ namespace TestMakeTools
 
 
 
-            if (cellSize != cellSize2)
+            if (cellSize != dt2.Columns.Count)
             {
                 Console.WriteLine("兩個檔案的欄位數量不一致，請確認一下EXCEL，並通知程式撰寫者。");
                 return;
@@ -177,10 +184,6 @@ namespace TestMakeTools
                     if (D.Equals(D2)) //資料更新
                     {
                         DataRow dtRow = updateData.NewRow();
-                        //for (int j = 0; j < cellSize; j++)
-                        //{
-                        //    dtRow[dt.Columns[j].ColumnName] = dt2.Rows[dt2Index].ItemArray[j].ToString();
-                        //}
                         dataFill(dt2, dtRow, dt2Index, 0);
                         updateData.Rows.Add(dtRow);
                         dt1Index++;
@@ -203,10 +206,6 @@ namespace TestMakeTools
                     for (int i = 0; i < addIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = NewData.NewRow();
-                        //for (int j = 0; j < cellSize; j++)
-                        //{
-                        //    dtRow[dt.Columns[j].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[j].ToString();
-                        //}
                         dataFill(dt2, dtRow, dt2Index, i);
                         NewData.Rows.Add(dtRow);
                     }
@@ -219,6 +218,10 @@ namespace TestMakeTools
                     int delIndexNum = 0; //資料刪除
                     for (int i = 1; i <= debugRange; i++) //確認刪除幾筆資料
                     {
+                        if (dt1Index + i == dt.Rows.Count) //到底了
+                        {
+                            break;
+                        }
                         if (D2.Equals(dt.Rows[dt1Index + i].ItemArray[debugField1].ToString()))
                         {
                             delIndexNum = i;
@@ -228,14 +231,7 @@ namespace TestMakeTools
                     for (int i = 0; i < delIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = deleteData.NewRow();
-                        //for (int j = 0; j < cellSize; j++)
-                        //{
-                        //    dtRow[dt.Columns[j].ColumnName] = dt.Rows[dt1Index + i].ItemArray[j].ToString();
-                        //}
                         dataFill(dt, dtRow, dt1Index, i);
-                        //dtRow[dt.Columns[debugField1].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField1].ToString();
-                        //dtRow[dt.Columns[debugField2].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField2].ToString();
-                        //dtRow[dt.Columns[debugField3].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField3].ToString();
                         deleteData.Rows.Add(dtRow);
                     }
                     if (delIndexNum > 0)
@@ -247,36 +243,44 @@ namespace TestMakeTools
                 }
             }
 
-
-
-            foreach (DataRow row1 in dt.Rows)
+            foreach (string str1 in dt.Rows[dt1Index].ItemArray)
             {
-                foreach (string str1 in row1.ItemArray)
-                {
-                    Console.Write(str1);
-                }
-                Console.Write("\n");
+                Console.Write(str1);
             }
-            Boolean first = true;
-            //int cellSize = dt2.Columns.Count;
-            foreach (DataRow row2 in dt2.Rows)
+            Console.Write("\n");
+
+            foreach (string str1 in dt2.Rows[dt2Index].ItemArray)
             {
-                if (first)
+                Console.Write(str1);
+            }
+            Console.Write("\n");
+
+
+            if (!(dt.Rows.Count == dt1Index + 1 && dt2.Rows.Count == dt2Index + 1)) //確認是否到底
+            {
+                if (dt.Rows.Count == dt1Index + 1) //新增資料
                 {
-                    first = false;
-                    Console.Write(row2.ItemArray.Count());
-                }
-                for (int j = 0; j < cellSize; j++)
-                {
-                    Console.Write(row2.ItemArray[j]);
+                    while (!(dt2.Rows.Count == dt2Index + 1))
+                    {
+                        DataRow dtRow = NewData.NewRow();
+                        dataFill(dt2, dtRow, dt2Index, 0);
+                        NewData.Rows.Add(dtRow);
+                        dt2Index++;
+                    }
                 }
 
-                //foreach (string str2 in row2.ItemArray)
-                //{
-                //    Console.Write(str2);
-                //}
-                Console.Write("\n");
+                if (dt2.Rows.Count == dt2Index + 1) //刪除資料
+                {
+                    while (!(dt.Rows.Count == dt1Index + 1))
+                    {
+                        DataRow dtRow = deleteData.NewRow();
+                        dataFill(dt, dtRow, dt1Index, 0);
+                        deleteData.Rows.Add(dtRow);
+                        dt1Index++;
+                    }
+                }
             }
+            
             Console.WriteLine("NewData:");
             foreach (DataRow row1 in NewData.Rows)
             {
@@ -304,15 +308,8 @@ namespace TestMakeTools
                 }
                 Console.Write("\n");
             }
-
-
-            /*
-            DataTable dt = new DataTable("TempTable");
-            dt.Columns.Add("D", typeof(String));
-            dt.Columns.Add("H", typeof(String));
-            dt.Columns.Add("S", typeof(String));
-            */
         }
+
 
         private static DataRow dataFill(DataTable dt, DataRow dtRow, int itemIndex, int index)
         {
