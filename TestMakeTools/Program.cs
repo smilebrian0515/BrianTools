@@ -27,21 +27,22 @@ namespace TestMakeTools
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Test By Brian.");
-            Console.WriteLine("(1)爬蟲取得NBA隊名");
-            Console.WriteLine("(2)爬蟲");
-            Console.WriteLine("(3)Excel");
-            Console.WriteLine("(4)網站導覽，輸入一個");
-            Console.WriteLine("(5)網站導覽，一次輸入一整串，輸入-1後結束輸入，開始產生EXCEL");
-            Console.WriteLine("(6)");
-            Console.WriteLine("(7)");
-            Console.WriteLine("(8)");
-            Console.WriteLine("(9)");
-            Console.WriteLine("(10)");
-            Console.Write("輸入想執行的方法數字: ");
-            string input = Console.ReadLine();
+            string input = "0";
             while (!input.Equals("-1"))
             {
+                Console.WriteLine("This Tool is By Brian.");
+                Console.WriteLine("(1)爬蟲取得NBA隊名");
+                Console.WriteLine("(2)爬蟲");
+                Console.WriteLine("(3)Excel");
+                Console.WriteLine("(4)網站導覽，輸入一個網址");
+                Console.WriteLine("(5)網站導覽，一次輸入一整串，輸入-1後結束輸入，開始產生EXCEL");
+                Console.WriteLine("(6)爬蟲(未完成)");
+                Console.WriteLine("(7)串HTML語法");
+                Console.WriteLine("(8)比對EXCEL內容");
+                Console.WriteLine("(9)");
+                Console.WriteLine("(10)");
+                Console.Write("輸入想執行的方法數字(輸入-1離開): ");
+                input = Console.ReadLine();
                 switch (input)
                 {
                     case "1":
@@ -90,7 +91,7 @@ namespace TestMakeTools
                     case "10":
                         break;
                 }
-                input = Console.ReadLine();
+                Console.Write("\n\n\n\n\n");
             }
 
             Console.WriteLine("Finish.");
@@ -99,19 +100,43 @@ namespace TestMakeTools
 
         public static void toVictoria()
         {
-            DataTable dt = loadExcel("test.xlsx");
-            DataTable dt2 = loadExcel("test2.xlsx");
+            Console.WriteLine("請輸入兩個Excel檔名，將會為您比較兩個檔案內的資料，請務必輸入正確檔名(並包含副檔名)");
+            Console.Write("請輸入第一個檔名(EX:test.xlsx):");
+            string srcFile = Console.ReadLine();
+            Console.Write("請輸入第二個檔名(EX:test2.xlsx):");
+            string srcFile2 = Console.ReadLine();
+            DataTable dt = loadExcel(srcFile);
+            DataTable dt2 = loadExcel(srcFile2);
+
+            //DataTable dt = loadExcel("test.xlsx");
+            //DataTable dt2 = loadExcel("test2.xlsx");
             int cellSize = dt.Columns.Count;
-            int cellSize2 = dt2.Columns.Count;
+            //List<int> fieldList = new List<int>();
+            //使用者的需求欄位
             int debugField1 = 1; //3
             int debugField2 = 2; //7
             int debugField3 = 3; //18
+            List<int> needField = new List<int>();
+            //int inputField = 0;
+            //Console.WriteLine("請輸入要比較的欄位，第一個盡量為人名、");
+            /*do
+            {
+                inputField = Console.Read();
+                needField.Add(inputField);
+            } while (inputField == -1);
+            */
+
+
+            needField.Add(debugField1);
+            needField.Add(debugField2);
+            needField.Add(debugField3);
+
             int debugRange = 5;
 
 
 
 
-            if (cellSize != cellSize2)
+            if (cellSize != dt2.Columns.Count)
             {
                 Console.WriteLine("兩個檔案的欄位數量不一致，請確認一下EXCEL，並通知程式撰寫者。");
                 return;
@@ -158,7 +183,7 @@ namespace TestMakeTools
             int dt1Index = 0;
             int dt2Index = 0;
             
-            while (!(dt.Rows.Count == dt1Index + 1 || dt2.Rows.Count == dt2Index + 1)) //還沒到底前的處理
+            while (!(dt.Rows.Count == dt1Index  || dt2.Rows.Count == dt2Index )) //還沒到底前的處理
             {
                 string D = dt.Rows[dt1Index].ItemArray[debugField1].ToString();
                 string D2 = dt2.Rows[dt2Index].ItemArray[debugField1].ToString();
@@ -171,19 +196,18 @@ namespace TestMakeTools
                 {
                     dt1Index++;
                     dt2Index++;
+                    GC.Collect();
                 }
                 else
                 {
                     if (D.Equals(D2)) //資料更新
                     {
                         DataRow dtRow = updateData.NewRow();
-                        for (int j = 0; j < cellSize; j++)
-                        {
-                            dtRow[dt.Columns[debugField1].ColumnName] = D2;
-                            dtRow[dt.Columns[debugField2].ColumnName] = H2;
-                            dtRow[dt.Columns[debugField3].ColumnName] = S2;
-                        }
+                        dataFill(dt2, dtRow, dt2Index, 0);
                         updateData.Rows.Add(dtRow);
+                        dt1Index++;
+                        dt2Index++;
+                        GC.Collect();
                         continue;
                     }
                     int addIndexNum = 0; //資料新增
@@ -202,20 +226,23 @@ namespace TestMakeTools
                     for (int i = 0; i < addIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = NewData.NewRow();
-                        dtRow[dt.Columns[debugField1].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField1].ToString();
-                        dtRow[dt.Columns[debugField2].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField2].ToString();
-                        dtRow[dt.Columns[debugField3].ColumnName] = dt2.Rows[dt2Index + i].ItemArray[debugField3].ToString();
+                        dataFill(dt2, dtRow, dt2Index, i);
                         NewData.Rows.Add(dtRow);
                     }
                     if (addIndexNum > 0)
                     {
                         dt2Index += addIndexNum;
+                        GC.Collect();
                         continue;
                     }
 
                     int delIndexNum = 0; //資料刪除
                     for (int i = 1; i <= debugRange; i++) //確認刪除幾筆資料
                     {
+                        if (dt1Index + i == dt.Rows.Count) //到底了
+                        {
+                            break;
+                        }
                         if (D2.Equals(dt.Rows[dt1Index + i].ItemArray[debugField1].ToString()))
                         {
                             delIndexNum = i;
@@ -225,23 +252,57 @@ namespace TestMakeTools
                     for (int i = 0; i < delIndexNum; i++) //將資料丟到DT
                     {
                         DataRow dtRow = deleteData.NewRow();
-                        dtRow[dt.Columns[debugField1].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField1].ToString();
-                        dtRow[dt.Columns[debugField2].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField2].ToString();
-                        dtRow[dt.Columns[debugField3].ColumnName] = dt.Rows[dt1Index + i].ItemArray[debugField3].ToString();
+                        dataFill(dt, dtRow, dt1Index, i);
                         deleteData.Rows.Add(dtRow);
                     }
                     if (delIndexNum > 0)
                     {
                         dt1Index += delIndexNum;
+                        GC.Collect();
                         continue;
                     }
 
+                    DataRow DelRow = deleteData.NewRow();
+                    dataFill(dt, DelRow, dt1Index, 0);
+                    deleteData.Rows.Add(DelRow);
+
+                    DataRow AddRow = NewData.NewRow();
+                    dataFill(dt2, AddRow, dt2Index, 0);
+                    NewData.Rows.Add(AddRow);
+                    dt1Index++;
+                    dt2Index++;
+                    GC.Collect();
                 }
             }
+            GC.Collect();
 
+            if (!(dt.Rows.Count == dt1Index && dt2.Rows.Count == dt2Index)) //確認是否到底
+            {
+                if (dt.Rows.Count == dt1Index) //新增資料
+                {
+                    while (!(dt2.Rows.Count == dt2Index))
+                    {
+                        DataRow dtRow = NewData.NewRow();
+                        dataFill(dt2, dtRow, dt2Index, 0);
+                        NewData.Rows.Add(dtRow);
+                        dt2Index++;
+                    }
+                }
 
-
-            foreach (DataRow row1 in dt.Rows)
+                if (dt2.Rows.Count == dt2Index) //刪除資料
+                {
+                    while (!(dt.Rows.Count == dt1Index))
+                    {
+                        DataRow dtRow = deleteData.NewRow();
+                        dataFill(dt, dtRow, dt1Index, 0);
+                        deleteData.Rows.Add(dtRow);
+                        dt1Index++;
+                    }
+                }
+            }
+            
+            Console.WriteLine("NewData:");
+            foreach (DataRow row1 in NewData.Rows)
             {
                 foreach (string str1 in row1.ItemArray)
                 {
@@ -249,34 +310,103 @@ namespace TestMakeTools
                 }
                 Console.Write("\n");
             }
-            Boolean first = true;
-            //int cellSize = dt2.Columns.Count;
-            foreach (DataRow row2 in dt2.Rows)
+            Console.WriteLine("UpdateData:");
+            foreach (DataRow row1 in updateData.Rows)
             {
-                if (first)
+                foreach (string str1 in row1.ItemArray)
                 {
-                    first = false;
-                    Console.Write(row2.ItemArray.Count());
+                    Console.Write(str1);
                 }
-                for (int j = 0; j < cellSize; j++)
-                {
-                    Console.Write(row2.ItemArray[j]);
-                }
-
-                //foreach (string str2 in row2.ItemArray)
-                //{
-                //    Console.Write(str2);
-                //}
                 Console.Write("\n");
             }
+            Console.WriteLine("DeleteData:");
+            foreach (DataRow row1 in deleteData.Rows)
+            {
+                foreach (string str1 in row1.ItemArray)
+                {
+                    Console.Write(str1);
+                }
+                Console.Write("\n");
+            }
+            createExcel(NewData, "新增資料");
+            createExcel(deleteData, "刪除資料");
+            createExcel(updateData, "修改資料");
+        }
+
+        public static void createExcel(DataTable dt, string fileName)
+        {
+            IWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sheet1 = (XSSFSheet)wb.CreateSheet(fileName);
+
+            MemoryStream ms = new MemoryStream();
+
+            XSSFRow row = null;
+
+            //設定儲存格樣式
+            XSSFCell cell = null;
+            XSSFCellStyle wrapStyle = (XSSFCellStyle)wb.CreateCellStyle();
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+
+            wrapStyle.SetFont(font1);
+            wrapStyle.WrapText = true;
+            wrapStyle.BorderTop = BorderStyle.Thin;
+            wrapStyle.BorderLeft = BorderStyle.Thin;
+            wrapStyle.BorderBottom = BorderStyle.Thin;
+            wrapStyle.BorderRight = BorderStyle.Thin;
+            wrapStyle.VerticalAlignment = VerticalAlignment.Center;
+
+            sheet1.PrintSetup.Landscape = true;
+            sheet1.ForceFormulaRecalculation = true;
+
+            int rowIndex = 0;
+            int field = 0;
+            
+            row = (XSSFRow)sheet1.CreateRow(rowIndex);
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                cell = (XSSFCell)row.CreateCell(i);
+                cell.CellStyle = wrapStyle;  //指定樣式
+                //cell.SetCellType(CellType.String);
+                cell.SetCellValue(dt.Columns[i].ColumnName);
+            }
+            rowIndex++;
 
 
-            /*
-            DataTable dt = new DataTable("TempTable");
-            dt.Columns.Add("D", typeof(String));
-            dt.Columns.Add("H", typeof(String));
-            dt.Columns.Add("S", typeof(String));
-            */
+            foreach (DataRow row1 in dt.Rows)
+            {
+                field = 0; 
+                row = (XSSFRow)sheet1.CreateRow(rowIndex);
+                foreach (string value in row1.ItemArray)
+                {
+                    cell = (XSSFCell)row.CreateCell(field);
+                    cell.CellStyle = wrapStyle;  //指定樣式
+                    //cell.SetCellType(CellType.String);
+                    cell.SetCellValue(value);
+                    field++;
+                }
+                rowIndex++;
+            }
+
+            sheet1.SetColumnWidth(0, 20 * 256);
+            sheet1.SetColumnWidth(1, 30 * 256);
+            //產生檔案
+            FileStream FS = File.Create(fileName + ".xlsx");
+            wb.Write(FS);
+            FS.Close();
+
+            Console.WriteLine("Create Excel: '" + fileName + "' Success.");
+        }
+
+        private static DataRow dataFill(DataTable dt, DataRow dtRow, int itemIndex, int index)
+        {
+            for (int j = 0; j < dt.Columns.Count; j++)
+            {
+                dtRow[dt.Columns[j].ColumnName] = dt.Rows[itemIndex + index].ItemArray[j].ToString();
+            }
+            return dtRow;
         }
 
 
