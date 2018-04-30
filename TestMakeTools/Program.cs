@@ -98,6 +98,28 @@ namespace TestMakeTools
             string str = Console.ReadLine();
         }
 
+        public static int getExcelFieldIndex(string input)
+        {
+            string str = input;
+            str = str.ToUpper();
+            if (str.Length == 1)
+            {
+                char c = (char)str.FirstOrDefault();
+                return (((int)c) - 65);
+            }
+            else
+            {
+                if (str.Length > 2)
+                {
+                    throw new System.Exception("很抱歉，目前不支援ZZ以後的欄位，有需要請自行修改，或通知程式撰寫者。");
+                }
+                char[] arr = str.ToArray();
+                int i = ((((int)arr[0]) - 64) * 26) + (((int)arr[1]) - 65);
+                return i;
+            }
+        }
+
+
         public static void toVictoria()
         {
             Console.WriteLine("請輸入兩個Excel檔名，將會為您比較兩個檔案內的資料，請務必輸入正確檔名(並包含副檔名)");
@@ -113,25 +135,28 @@ namespace TestMakeTools
             int cellSize = dt.Columns.Count;
             //List<int> fieldList = new List<int>();
             //使用者的需求欄位
-            int debugField1 = 1; //3
-            int debugField2 = 2; //7
-            int debugField3 = 3; //18
+            //int debugField1 = 1; //3
+            //int debugField2 = 2; //7
+            //int debugField3 = 3; //18
             List<int> needField = new List<int>();
-            //int inputField = 0;
-            //Console.WriteLine("請輸入要比較的欄位，第一個盡量為人名、");
-            /*do
+            string inputField = string.Empty;
+            Console.WriteLine("請輸入要比較的欄位，例如:D、H、AA，一次輸入一個");
+            Console.WriteLine("第一個盡量為人名、ID等，比較不易變動的資料，本程式會以第一個欄位為基準去比較其他欄位的資料，來得知那些資料有變動。");
+            Console.WriteLine("輸入完畢，請再按一下Enter");
+            inputField = Console.ReadLine();
+            while (!string.IsNullOrEmpty(inputField))
             {
-                inputField = Console.Read();
-                needField.Add(inputField);
-            } while (inputField == -1);
-            */
+                needField.Add(getExcelFieldIndex(inputField));
+                inputField = Console.ReadLine();
+            }
 
+            if (needField.Count == 0)
+            {
+                Console.WriteLine("沒有輸入任何欄位");
+                return;
+            }
 
-            needField.Add(debugField1);
-            needField.Add(debugField2);
-            needField.Add(debugField3);
-
-            int debugRange = 5;
+            int checkRange = 5;
 
 
 
@@ -185,14 +210,7 @@ namespace TestMakeTools
             
             while (!(dt.Rows.Count == dt1Index  || dt2.Rows.Count == dt2Index )) //還沒到底前的處理
             {
-                string D = dt.Rows[dt1Index].ItemArray[debugField1].ToString();
-                string D2 = dt2.Rows[dt2Index].ItemArray[debugField1].ToString();
-                string H = dt.Rows[dt1Index].ItemArray[debugField2].ToString();
-                string H2 = dt2.Rows[dt2Index].ItemArray[debugField2].ToString();
-                string S = dt.Rows[dt1Index].ItemArray[debugField3].ToString();
-                string S2 = dt2.Rows[dt2Index].ItemArray[debugField3].ToString();
-
-                if (D.Equals(D2) && H.Equals(H2) && S.Equals(S2)) //資料相同
+                if (checkDataEquals(dt, dt2, dt1Index, dt2Index, needField)) //資料相同
                 {
                     dt1Index++;
                     dt2Index++;
@@ -200,7 +218,7 @@ namespace TestMakeTools
                 }
                 else
                 {
-                    if (D.Equals(D2)) //資料更新
+                    if (dt.Rows[dt1Index].ItemArray[needField.First()].ToString().Equals(dt2.Rows[dt2Index].ItemArray[needField.First()].ToString())) //資料更新
                     {
                         DataRow dtRow = updateData.NewRow();
                         dataFill(dt2, dtRow, dt2Index, 0);
@@ -211,13 +229,13 @@ namespace TestMakeTools
                         continue;
                     }
                     int addIndexNum = 0; //資料新增
-                    for (int i = 1; i <= debugRange; i++) //檢查新增幾筆資料
+                    for (int i = 1; i <= checkRange; i++) //檢查新增幾筆資料
                     {
                         if (dt2Index + i == dt2.Rows.Count) //到底了
                         {
                             break;
                         }
-                        if (D.Equals(dt2.Rows[dt2Index+i].ItemArray[debugField1].ToString()))
+                        if (dt.Rows[dt1Index].ItemArray[needField.First()].ToString().Equals(dt2.Rows[dt2Index+i].ItemArray[needField.First()].ToString()))
                         {
                             addIndexNum = i;
                             break;
@@ -237,13 +255,13 @@ namespace TestMakeTools
                     }
 
                     int delIndexNum = 0; //資料刪除
-                    for (int i = 1; i <= debugRange; i++) //確認刪除幾筆資料
+                    for (int i = 1; i <= checkRange; i++) //確認刪除幾筆資料
                     {
                         if (dt1Index + i == dt.Rows.Count) //到底了
                         {
                             break;
                         }
-                        if (D2.Equals(dt.Rows[dt1Index + i].ItemArray[debugField1].ToString()))
+                        if (dt2.Rows[dt2Index].ItemArray[needField.First()].ToString().Equals(dt.Rows[dt1Index + i].ItemArray[needField.First()].ToString()))
                         {
                             delIndexNum = i;
                             break;
@@ -331,6 +349,21 @@ namespace TestMakeTools
             createExcel(NewData, "新增資料");
             createExcel(deleteData, "刪除資料");
             createExcel(updateData, "修改資料");
+        }
+
+        public static Boolean checkDataEquals(DataTable dt1, DataTable dt2, int index1, int index2, List<int> Field)
+        {
+            Boolean isSame = true;
+
+            foreach (int i in Field)
+            {
+                if (!dt1.Rows[index1].ItemArray[i].ToString().Equals(dt2.Rows[index2].ItemArray[i].ToString()))
+                {
+                    isSame = false;
+                    break;
+                }
+            }
+            return isSame;
         }
 
         public static void createExcel(DataTable dt, string fileName)
