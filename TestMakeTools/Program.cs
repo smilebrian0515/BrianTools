@@ -158,9 +158,6 @@ namespace TestMakeTools
 
             int checkRange = 5;
 
-
-
-
             if (cellSize != dt2.Columns.Count)
             {
                 Console.WriteLine("兩個檔案的欄位數量不一致，請確認一下EXCEL，並通知程式撰寫者。");
@@ -293,7 +290,6 @@ namespace TestMakeTools
                 }
             }
             GC.Collect();
-
             if (!(dt.Rows.Count == dt1Index && dt2.Rows.Count == dt2Index)) //確認是否到底
             {
                 if (dt.Rows.Count == dt1Index) //新增資料
@@ -354,7 +350,6 @@ namespace TestMakeTools
         public static Boolean checkDataEquals(DataTable dt1, DataTable dt2, int index1, int index2, List<int> Field)
         {
             Boolean isSame = true;
-
             foreach (int i in Field)
             {
                 if (!dt1.Rows[index1].ItemArray[i].ToString().Equals(dt2.Rows[index2].ItemArray[i].ToString()))
@@ -432,6 +427,7 @@ namespace TestMakeTools
 
             Console.WriteLine("Create Excel: '" + fileName + "' Success.");
         }
+
 
         private static DataRow dataFill(DataTable dt, DataRow dtRow, int itemIndex, int index)
         {
