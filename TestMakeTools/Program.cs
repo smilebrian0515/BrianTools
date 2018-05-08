@@ -20,6 +20,7 @@ using System.Data.SqlClient;
 using HtmlAgilityPack;
 using System.Threading.Tasks;
 using System.Linq;
+using static Tools;
 
 namespace TestMakeTools
 {
@@ -39,7 +40,7 @@ namespace TestMakeTools
                 Console.WriteLine("(6)爬蟲(未完成)");
                 Console.WriteLine("(7)串HTML語法");
                 Console.WriteLine("(8)比對EXCEL內容");
-                Console.WriteLine("(9)");
+                Console.WriteLine("(9)產生BCrypt");
                 Console.WriteLine("(10)");
                 Console.Write("輸入想執行的方法數字(輸入-1離開): ");
                 input = Console.ReadLine();
@@ -87,6 +88,7 @@ namespace TestMakeTools
                         toVictoria();
                         break;
                     case "9":
+                        CreateBCrypt();
                         break;
                     case "10":
                         break;
@@ -96,6 +98,17 @@ namespace TestMakeTools
 
             Console.WriteLine("Finish.");
             string str = Console.ReadLine();
+        }
+
+
+        public static void CreateBCrypt()
+        {
+            Console.Write("輸入PASSWORD");
+            string pwd = Console.ReadLine();
+            string salt = string.Empty;
+            string hashpwd = Tools.Cryptography.Hash(pwd,out salt);
+
+            Console.Write("PWD:"+pwd+"\nSalt:"+salt+"\nHashPWD:"+hashpwd);
         }
 
         public static int getExcelFieldIndex(string input)
@@ -315,33 +328,33 @@ namespace TestMakeTools
                 }
             }
             
-            Console.WriteLine("NewData:");
-            foreach (DataRow row1 in NewData.Rows)
-            {
-                foreach (string str1 in row1.ItemArray)
-                {
-                    Console.Write(str1);
-                }
-                Console.Write("\n");
-            }
-            Console.WriteLine("UpdateData:");
-            foreach (DataRow row1 in updateData.Rows)
-            {
-                foreach (string str1 in row1.ItemArray)
-                {
-                    Console.Write(str1);
-                }
-                Console.Write("\n");
-            }
-            Console.WriteLine("DeleteData:");
-            foreach (DataRow row1 in deleteData.Rows)
-            {
-                foreach (string str1 in row1.ItemArray)
-                {
-                    Console.Write(str1);
-                }
-                Console.Write("\n");
-            }
+            //Console.WriteLine("NewData:");
+            //foreach (DataRow row1 in NewData.Rows)
+            //{
+            //    foreach (string str1 in row1.ItemArray)
+            //    {
+            //        Console.Write(str1);
+            //    }
+            //    Console.Write("\n");
+            //}
+            //Console.WriteLine("UpdateData:");
+            //foreach (DataRow row1 in updateData.Rows)
+            //{
+            //    foreach (string str1 in row1.ItemArray)
+            //    {
+            //        Console.Write(str1);
+            //    }
+            //    Console.Write("\n");
+            //}
+            //Console.WriteLine("DeleteData:");
+            //foreach (DataRow row1 in deleteData.Rows)
+            //{
+            //    foreach (string str1 in row1.ItemArray)
+            //    {
+            //        Console.Write(str1);
+            //    }
+            //    Console.Write("\n");
+            //}
             createExcel(NewData, "新增資料");
             createExcel(deleteData, "刪除資料");
             createExcel(updateData, "修改資料");
@@ -765,16 +778,16 @@ namespace TestMakeTools
             //    {
             //        if (item.Contains(str))
             //        {
-            //            Console.WriteLine(getAttribute(item, "href"));
+            //            Console.WriteLine(getHTMLAttribute(item, "href"));
             //            break;
             //        }
             //    }
             //}
             //foreach (string item in GetHtmlBySelector("a img", htmlContent))
             //{
-            //    Console.WriteLine(getAttribute(item, "alt"));
+            //    Console.WriteLine(getHTMLAttribute(item, "alt"));
             //}
-            //getAttribute();
+            //getHTMLAttribute();
             /*
             List<string> footAlt = new List<string>();
             List<string> footLink = new List<string>();
@@ -784,16 +797,16 @@ namespace TestMakeTools
                 {
                     if (item.Contains(str))
                     {
-                        //Console.WriteLine(getAttribute(item, "href"));
-                        footLink.Add(getAttribute(item, "href"));
+                        //Console.WriteLine(getHTMLAttribute(item, "href"));
+                        footLink.Add(getHTMLAttribute(item, "href"));
                         break;
                     }
                 }
             }
             foreach (string item in GetHtmlBySelector("a img", htmlContent))
             {
-                //Console.WriteLine(getAttribute(item, "alt"));
-                footAlt.Add(getAttribute(item, "alt"));
+                //Console.WriteLine(getHTMLAttribute(item, "alt"));
+                footAlt.Add(getHTMLAttribute(item, "alt"));
             }
             List<List<string>> foot = new List<List<string>>();
             foot.Add(footAlt);
@@ -815,7 +828,7 @@ namespace TestMakeTools
             }
             else
             {
-                string siteName = getAttribute(GetHtmlBySelector("title", htmlContent).Where(o => o == o).First(), "value");
+                string siteName = getHTMLAttribute(GetHtmlBySelector("title", htmlContent).Where(o => o == o).First(), "value");
                 //Console.WriteLine("topText.Count = " + topText.Count + ", contentText.Count = " + contentText.Count + ", footAlt.Count = " + footAlt.Count);
                 Console.WriteLine("成功爬到 " + siteName + " 的資料，開始產生EXCEL。");
                 NPOIToExcel(ls, siteName);
@@ -853,14 +866,14 @@ namespace TestMakeTools
                 {
                     if (item.Contains(str))
                     {
-                        footLink.Add(getAttribute(item, "href"));
+                        footLink.Add(getHTMLAttribute(item, "href"));
                         break;
                     }
                 }
             }
             foreach (string item in GetHtmlBySelector("a img", htmlContent))
             {
-                footAlt.Add(getAttribute(item, "alt"));
+                footAlt.Add(getHTMLAttribute(item, "alt"));
             }
             List<List<string>> foot = new List<List<string>>();
             foot.Add(footAlt);
@@ -880,7 +893,7 @@ namespace TestMakeTools
             }
             else
             {
-                string siteName = getAttribute(GetHtmlBySelector("title", htmlContent).Where(o => o == o).First(), "value");
+                string siteName = getHTMLAttribute(GetHtmlBySelector("title", htmlContent).Where(o => o == o).First(), "value");
                 Console.WriteLine("成功爬到 " + siteName + " 的資料，開始產生EXCEL。");
                 NPOIToExcel(ls, siteName);
             }
@@ -897,7 +910,7 @@ namespace TestMakeTools
             {
                 Console.WriteLine(item);
 
-                //int indexOfStart = item.IndexOf(getAttribute) + attributeLength; //篩到屬性名稱
+                //int indexOfStart = item.IndexOf(getHTMLAttribute) + attributeLength; //篩到屬性名稱
                 //indexOfStart = indexOfStart + item.Substring(indexOfStart).IndexOf("\"") + 1; // 篩到第一個 "
                 //string str = item.Substring(indexOfStart);
                 //int indexOfEnd = str.IndexOf("\""); //篩到第二個 "
@@ -925,13 +938,13 @@ namespace TestMakeTools
         }
 
         //爬蟲，利用jQuery去抓url上面的內容
-        static List<string> WebCrawler(string url, string jQuerySelect, string getAttribute)
+        static List<string> WebCrawler(string url, string jQuerySelect, string getHTMLAttribute)
         {
             string htmlContent = GetContent(url);
-            int attributeLength = getAttribute.Length;
+            int attributeLength = getHTMLAttribute.Length;
             List<string> ls = new List<string>();
 
-            if (getAttribute.ToLower().Equals("value"))
+            if (getHTMLAttribute.ToLower().Equals("value"))
             {
                 foreach (string item in GetHtmlBySelector(jQuerySelect, htmlContent))
                 {
@@ -947,7 +960,7 @@ namespace TestMakeTools
             {
                 foreach (string item in GetHtmlBySelector(jQuerySelect, htmlContent))
                 {
-                    int indexOfStart = item.IndexOf(getAttribute) + attributeLength; //篩到屬性名稱
+                    int indexOfStart = item.IndexOf(getHTMLAttribute) + attributeLength; //篩到屬性名稱
                     indexOfStart = indexOfStart + item.Substring(indexOfStart).IndexOf("\"") + 1; // 篩到第一個 "
                     string str = item.Substring(indexOfStart);
                     int indexOfEnd = str.IndexOf("\""); //篩到第二個 "
@@ -960,118 +973,6 @@ namespace TestMakeTools
 
 
             return ls;
-        }
-
-        public static string getAttribute(string result, string attr)
-        {
-            int attributeLength = attr.Length;
-            string str = string.Empty;
-            if (attr.ToLower().Equals("value"))
-            {
-                int indexOfStart = result.IndexOf(">") + 1; //篩到 >
-                str = result.Substring(indexOfStart);
-                int indexOfEnd = str.IndexOf("<"); //篩到 <
-                str = result.Substring(indexOfStart, indexOfEnd); //取得屬性的值
-            }
-            else
-            {
-
-                int indexOfStart = result.IndexOf(attr) + attributeLength; //篩到屬性名稱
-                indexOfStart = indexOfStart + result.Substring(indexOfStart).IndexOf("\"") + 1; // 篩到第一個 "
-                str = result.Substring(indexOfStart);
-                int indexOfEnd = str.IndexOf("\""); //篩到第二個 "
-                str = result.Substring(indexOfStart, indexOfEnd); //取得屬性的值
-            }
-            return str;
-        }
-
-        //jQuery 部分
-        public static List<string> GetHtmlBySelector(string Selector, string Html)
-        {
-            List<string> targets = new List<string>();
-            CQ cq = CQ.Create(Html);
-            foreach (IDomObject obj in cq.Find(Selector))
-            {
-                targets.Add(System.Net.WebUtility.HtmlDecode(obj.Render()));
-            }
-            return targets;
-        }
-
-        //抓HTML內容部分
-        public static string GetContent(string Url)
-        {
-            string Content = string.Empty, Title = string.Empty;
-            try
-            {
-                HttpWebRequest request = WebRequest.Create(Url) as HttpWebRequest;
-                request.Credentials = CredentialCache.DefaultNetworkCredentials;
-                if (Url.StartsWith("https"))
-                {
-                    ServicePointManager.SecurityProtocol = (SecurityProtocolType)4032; ;
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                }
-                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                request.PreAuthenticate = true;
-                request.AllowAutoRedirect = true;
-                request.MaximumAutomaticRedirections = 100;
-                request.Timeout = 20 * 1000;
-                request.Accept = "*/*";
-                request.Headers.Add("Accept-Language", "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7");
-                request.Headers.Add("Accept-Encoding", "gzip, deflate, br");
-                request.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36";
-                request.Method = "GET";
-                request.KeepAlive = true;
-                request.Host = new Uri(Url).Host;
-
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                string ContentType = response.ContentType.ToLower();
-                string CharacterSet = response.CharacterSet;
-
-                if (ContentType.ToLower().Contains("text"))
-                {
-                    byte[] Data = new byte[0];
-                    Stream responseStream = response.GetResponseStream();
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        byte[] buffer = new byte[4096];
-                        int Length = responseStream.Read(buffer, 0, buffer.Length);
-                        while (Length > 0)
-                        {
-                            ms.Write(buffer, 0, Length);
-                            Length = responseStream.Read(buffer, 0, buffer.Length);
-                        }
-                        Data = ms.ToArray();
-                    }
-
-                    Content = Encoding.UTF8.GetString(Data, 0, Data.Length);
-
-                    if (Content.ToLower().Contains("charset=big5") || CharacterSet.ToLower().Contains("big5"))
-                    {
-                        Content = Encoding.GetEncoding("big5").GetString(Data, 0, Data.Length);
-                    }
-                }
-                response.Close();
-                request.Abort();
-            }
-            catch (WebException)
-            {
-                if (Url.StartsWith("http:"))
-                {
-                    return GetContent(Url.Replace("http:", "https:"));
-                }
-                else Content = "[[404]]";
-            }
-            catch (UriFormatException)
-            {
-                Content = "[[網址不正確]]";
-            }
-            catch (Exception ex)
-            {
-                Content = "[[" + ex.Message + "]]";
-            }
-            finally { }
-
-            return Content;
         }
     }
 
