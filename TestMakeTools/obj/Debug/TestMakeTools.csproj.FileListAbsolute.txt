@@ -35,3 +35,5 @@ E:\gitLab\BrianTool\TestMakeTools\obj\Debug\TestMakeTools.csprojResolveAssemblyR
 E:\gitLab\BrianTool\TestMakeTools\obj\Debug\TestMakeTools.csproj.CoreCompileInputs.cache
 E:\gitLab\BrianTool\TestMakeTools\obj\Debug\TestMakeTools.exe
 E:\gitLab\BrianTool\TestMakeTools\obj\Debug\TestMakeTools.pdb
+D:\Brian\BrianPlay\Brian_Test\TestMakeTools\bin\Debug\BCrypt.Net.dll
+D:\Brian\BrianPlay\Brian_Test\TestMakeTools\bin\Debug\BCrypt.Net.xml
