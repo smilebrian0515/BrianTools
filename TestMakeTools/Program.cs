@@ -41,7 +41,18 @@ namespace TestMakeTools
                 Console.WriteLine("(7)串HTML語法");
                 Console.WriteLine("(8)比對EXCEL內容");
                 Console.WriteLine("(9)產生BCrypt");
-                Console.WriteLine("(10)");
+                Console.WriteLine("(10)得到本地IP");
+                Console.WriteLine("(11)");
+                Console.WriteLine("(12)");
+                Console.WriteLine("(13)");
+                Console.WriteLine("(14)");
+                Console.WriteLine("(15)");
+                Console.WriteLine("(16)");
+                Console.WriteLine("(17)");
+                Console.WriteLine("(18)");
+                Console.WriteLine("(19)");
+                Console.WriteLine("(20)");
+                Console.WriteLine("(21)");
                 Console.Write("輸入想執行的方法數字(輸入-1離開): ");
                 input = Console.ReadLine();
                 switch (input)
@@ -91,6 +102,7 @@ namespace TestMakeTools
                         CreateBCrypt();
                         break;
                     case "10":
+                        getLocalIP();
                         break;
                 }
                 Console.Write("\n\n\n\n\n");
@@ -98,6 +110,21 @@ namespace TestMakeTools
 
             Console.WriteLine("Finish.");
             string str = Console.ReadLine();
+        }
+
+        public static void getLocalIP()
+        {
+            string strHostName = Dns.GetHostName();
+            IPHostEntry iPHostEntry = Dns.GetHostEntry(strHostName);
+
+            foreach (IPAddress ipAddress in iPHostEntry.AddressList)
+            {
+                //只取得IP V4的Address
+                if (ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    Console.WriteLine("Local IP:" + ipAddress.ToString());
+                }
+            }
         }
 
 
