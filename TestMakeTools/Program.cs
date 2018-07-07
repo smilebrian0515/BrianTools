@@ -85,6 +85,15 @@ namespace TestMakeTools
                         }
                         break;
                     case "6":
+                        List<string> urlArr = new List<string>();
+                        Console.Write("請輸入網站網址: ");
+                        string urlStr = Console.ReadLine();
+                        while (!urlStr.Equals("-1"))
+                        {
+                            urlArr.Add(urlStr);
+                            Console.Write("請輸入網站網址: ");
+                            urlStr = Console.ReadLine();
+                        }
                         Console.Write("請輸入上方導覽的Query指令: ");
                         string topQuery = Console.ReadLine();
                         Console.Write("請輸入內容的Query指令: ");
