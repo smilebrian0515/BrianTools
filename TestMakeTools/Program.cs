@@ -36,13 +36,13 @@ namespace TestMakeTools
                 Console.WriteLine("(2)爬蟲");
                 Console.WriteLine("(3)Excel");
                 Console.WriteLine("(4)網站導覽，輸入一個網址");
-                Console.WriteLine("(5)網站導覽，一次輸入一整串，輸入-1後結束輸入，開始產生EXCEL");
-                Console.WriteLine("(6)爬蟲(未完成)");
+                Console.WriteLine("(5)網站導覽，台南專屬客製");
+                Console.WriteLine("(6)爬蟲(網站導覽)，分別輸入[上方連結],[網站導覽],[下方連結]的搜尋字串，去匯成Excel");
                 Console.WriteLine("(7)串HTML語法");
                 Console.WriteLine("(8)比對EXCEL內容");
                 Console.WriteLine("(9)產生BCrypt");
                 Console.WriteLine("(10)得到本地IP");
-                Console.WriteLine("(11)");
+                Console.WriteLine("(11)爬蟲:jQuery to Select");
                 Console.WriteLine("(12)");
                 Console.WriteLine("(13)");
                 Console.WriteLine("(14)");
@@ -67,7 +67,7 @@ namespace TestMakeTools
                         //testOutExcel();
                         break;
                     case "4":
-                        getSitemapForTainan("", "div form a", "#sitecontent ul li a", "");
+                        getSiteMapForTainan("", "div form a", "#sitecontent ul li a", "");
                         break;
                     case "5":
                         List<string> URLls = new List<string>();
@@ -81,7 +81,7 @@ namespace TestMakeTools
                         }
                         foreach (string item in URLls)
                         {
-                            getSitemapForTainan(item, "div form a", "#sitecontent ul li a", "");
+                            getSiteMapForTainan(item, "div form a", "#sitecontent ul li a", "");
                         }
                         break;
                     case "6":
@@ -99,7 +99,13 @@ namespace TestMakeTools
                         Console.Write("請輸入內容的Query指令: ");
                         string contentQuery = Console.ReadLine();
                         Console.Write("請輸入下方導覽的Query指令: ");
-                        string foot = Console.ReadLine();
+                        string footQuery = Console.ReadLine();
+
+                        foreach (string item in urlArr)
+                        {
+                            getSiteMap(item, topQuery, contentQuery, footQuery);
+                        }
+                        
                         break;
                     case "7":
                         make0419();
@@ -112,6 +118,17 @@ namespace TestMakeTools
                         break;
                     case "10":
                         getLocalIP();
+                        break;
+                    case "11":
+                        Console.Write("請輸入網站網址: ");
+                        url = Console.ReadLine();
+                        Console.Write("請輸入jQuery Selector: ");
+                        string jQueryString = Console.ReadLine();
+                        List<string> ls = WebCrawler(url, jQueryString, "value");
+                        foreach (string item in ls)
+                        {
+                            Console.WriteLine(item);
+                        }
                         break;
                 }
                 Console.Write("\n\n\n\n\n");
@@ -746,6 +763,176 @@ namespace TestMakeTools
             FS.Close();
         }
 
+        public static void NPOIToExcelForSiteMap(SiteMap siteMap, string siteName)
+        {
+
+            IWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sheet1 = (XSSFSheet)wb.CreateSheet(siteName);
+
+            MemoryStream ms = new MemoryStream();
+
+            XSSFRow row = null;
+
+            //設定儲存格樣式
+            XSSFCell cell = null;
+            XSSFCellStyle wrapStyle = (XSSFCellStyle)wb.CreateCellStyle();
+
+            XSSFFont font1 = (XSSFFont)wb.CreateFont();
+            //字體尺寸
+            font1.FontHeightInPoints = 12;
+
+            wrapStyle.SetFont(font1);
+            wrapStyle.WrapText = true;
+            wrapStyle.BorderTop = BorderStyle.Thin;
+            wrapStyle.BorderLeft = BorderStyle.Thin;
+            wrapStyle.BorderBottom = BorderStyle.Thin;
+            wrapStyle.BorderRight = BorderStyle.Thin;
+            wrapStyle.VerticalAlignment = VerticalAlignment.Center;
+
+            sheet1.PrintSetup.Landscape = true;
+            sheet1.ForceFormulaRecalculation = true;
+
+            int rowIndex = 0;
+            int field = 0;
+            int rowPartIndex = 0;
+
+            row = (XSSFRow)sheet1.CreateRow(rowIndex);
+            cell = (XSSFCell)row.CreateCell(0);
+            cell.CellStyle = wrapStyle;  //指定樣式
+            cell.SetCellType(CellType.String);
+            cell.SetCellValue("頁面名稱");
+            //cell = (XSSFCell)row.CreateCell(1);
+            //cell.CellStyle = wrapStyle;  //指定樣式
+            //cell.SetCellType(CellType.String);
+            //cell.SetCellValue("連結");
+            rowIndex++;
+            rowPartIndex++;
+
+            //上方連結
+
+            for (int i = 0; i < siteMap.TopLink.Text.Count; i++)
+            {
+                row = (XSSFRow)sheet1.CreateRow(rowIndex++);
+                cell = (XSSFCell)row.CreateCell(0);
+                cell.CellStyle = wrapStyle;  //指定樣式
+                cell.SetCellValue(siteMap.TopLink.Text[i]);
+                //cell = (XSSFCell)row.CreateCell(1);
+                //cell.CellStyle = wrapStyle;  //指定樣式
+                //cell.SetCellValue(siteMap.TopLink.Link[i]);
+            }
+
+            //網站導覽
+
+            for (int i = 0; i < siteMap.Content.Text.Count; i++)
+            {
+                row = (XSSFRow)sheet1.CreateRow(rowIndex++);
+                int index = checkIndex(siteMap.Content.Text[i]);
+                if (index > field)
+                {
+                    field = index;
+                }
+
+                cell = (XSSFCell)row.CreateCell(index);
+                cell.CellStyle = wrapStyle;  //指定樣式
+                cell.SetCellValue(siteMap.Content.Text[i]);
+                //cell = (XSSFCell)row.CreateCell(1);
+                //cell.CellStyle = wrapStyle;  //指定樣式
+                //cell.SetCellValue(siteMap.Content.Link[i]);
+            }
+
+            //下方連結
+
+            for (int i = 0; i < siteMap.BottomLink.Text.Count; i++)
+            {
+                row = (XSSFRow)sheet1.CreateRow(rowIndex++);
+                cell = (XSSFCell)row.CreateCell(0);
+                cell.CellStyle = wrapStyle;  //指定樣式
+                cell.SetCellValue(siteMap.BottomLink.Text[i]);
+                //cell = (XSSFCell)row.CreateCell(1);
+                //cell.CellStyle = wrapStyle;  //指定樣式
+                //cell.SetCellValue(siteMap.BottomLink.Link[i]);
+            }
+
+
+            sheet1.SetColumnWidth(0, 20 * 256);
+            //sheet1.SetColumnWidth(1, 30 * 256);
+            //產生檔案
+            FileStream FS = File.Create("D:\\Brian\\" + siteName + ".xlsx");
+            wb.Write(FS);
+            FS.Close();
+        }
+
+        static int checkIndex(string data, int level = 0, int type = 1)
+        {
+            int index = -1;
+            switch (type)
+            {
+                case 0:
+                    return level;
+                case 1:
+                    index = data.IndexOf("-");
+
+                    if (index < 0)
+                    {
+                        return checkIndex(data, level, 2);
+                    }
+                    else
+                    {
+                        int i = 0;
+                        if (int.TryParse(data.Substring(index+1, 1), out i))
+                        {
+                            return checkIndex(data.Substring(index+1), level + 1, 1);
+                        }
+                        else
+                        {
+                            return level;
+                        }
+                    }
+                    
+                case 2:
+                    index = data.IndexOf(".");
+
+                    if (index < 0)
+                    {
+                        return checkIndex(data, level, 3);
+                    }
+                    else
+                    {
+                        int i = 0;
+                        if (int.TryParse(data.Substring(index+1, 1), out i))
+                        {
+                            return checkIndex(data.Substring(index+1), level + 1, 2);
+                        }
+                        else
+                        {
+                            return level;
+                        }
+                    }
+                    
+                case 3:
+                    index = data.IndexOf("-");
+
+                    if (index < 0)
+                    {
+                        return checkIndex(data, level, 0);
+                    }
+                    else
+                    {
+                        int i = 0;
+                        if (int.TryParse(data.Substring(index+1, 1), out i))
+                        {
+                            return checkIndex(data.Substring(index+1), level + 1, 3);
+                        }
+                        else
+                        {
+                            return level;
+                        }
+                    }
+            }
+
+            return level;
+        }
+
         static void getSitemap(string url, string topQuery, string contentQuery, string footQuery)
         {
             if (url.Equals(""))
@@ -872,7 +1059,7 @@ namespace TestMakeTools
             
         }
 
-        static void getSitemapForTainan(string url, string topQuery, string contentQuery, string footQuery)
+        static void getSiteMapForTainan(string url, string topQuery, string contentQuery, string footQuery)
         {
             if (url.Equals(""))
             {
@@ -933,6 +1120,69 @@ namespace TestMakeTools
                 Console.WriteLine("成功爬到 " + siteName + " 的資料，開始產生EXCEL。");
                 NPOIToExcel(ls, siteName);
             }
+
+        }
+
+        static void getSiteMap(string url, string topQuery, string contentQuery, string footQuery)
+        {
+            if (url.Equals(""))
+            {
+                Console.Write("請輸入該網站的網站導覽網址:");
+                url = Console.ReadLine();
+            }
+            string htmlContent = GetContent(url);
+            SiteMap sitemap = new SiteMap();
+
+            sitemap.TopLink.Text = WebCrawler(url, topQuery, "value");
+            sitemap.TopLink.Link = WebCrawler(url, topQuery, "href");
+
+            sitemap.Content.Text = WebCrawler(url, contentQuery, "value");
+            sitemap.Content.Link = WebCrawler(url, contentQuery, "href");
+
+            sitemap.BottomLink.Text = WebCrawler(url, footQuery, "value");
+            sitemap.BottomLink.Link = WebCrawler(url, footQuery, "href");
+
+
+
+            if (sitemap.TopLink.Text.Count == 0 && sitemap.Content.Text.Count == 0 && sitemap.BottomLink.Text.Count == 0)
+            {
+                Console.WriteLine("無資料，網址" + url + "可能為錯誤頁面。");
+                using (StreamWriter outputFile = new StreamWriter(@"D:\\Brian\\WriteLine.txt", true))
+                {
+                    outputFile.WriteLine("無資料，網址" + url + "可能為錯誤頁面。");
+                }
+            }
+            else
+            {
+                string siteName = getHTMLAttribute(GetHtmlBySelector("title", htmlContent).Where(o => o == o).First(), "value");
+                Console.WriteLine("成功爬到 " + siteName + " 的資料，開始產生EXCEL。");
+                NPOIToExcelForSiteMap(sitemap, siteName);
+            }
+
+        }
+
+        public class SiteMap
+        {
+            public SiteMapBlock TopLink;
+            public SiteMapBlock Content;
+            public SiteMapBlock BottomLink;
+
+            public SiteMap()
+            {
+                TopLink = new SiteMapBlock();
+                Content = new SiteMapBlock();
+                BottomLink = new SiteMapBlock();
+            }
+        }
+
+        public class SiteMapBlock
+        {
+            public List<string> Text;
+            public List<string> Link;
+            public SiteMapBlock SubBlock;
+
+            public SiteMapBlock() { }
+
 
         }
 
