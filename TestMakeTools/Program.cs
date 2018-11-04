@@ -4,6 +4,8 @@ using System.IO;
 using System.Text;
 using System.Net;
 using CsQuery;
+using System.Data;
+using System.Data.SqlClient;
 
 using NPOI;
 using NPOI.HSSF;
@@ -15,8 +17,7 @@ using NPOI.XSSF.Model;
 using NPOI.HSSF.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
-using System.Data;
-using System.Data.SqlClient;
+
 using HtmlAgilityPack;
 using System.Threading.Tasks;
 using System.Linq;
@@ -43,7 +44,7 @@ namespace TestMakeTools
                 Console.WriteLine("(9)產生BCrypt");
                 Console.WriteLine("(10)得到本地IP");
                 Console.WriteLine("(11)爬蟲:jQuery to Select");
-                Console.WriteLine("(12)");
+                Console.WriteLine("(12)MP3相關");
                 Console.WriteLine("(13)");
                 Console.WriteLine("(14)");
                 Console.WriteLine("(15)");
@@ -130,12 +131,37 @@ namespace TestMakeTools
                             Console.WriteLine(item);
                         }
                         break;
+                    case "12":
+                        getMP3Detail();
+                        break;
+                    case "13":
+
+                        break;
+                    case "14":
+
+                        break;
                 }
                 Console.Write("\n\n\n\n\n");
             }
 
             Console.WriteLine("Finish.");
             string str = Console.ReadLine();
+        }
+
+        public static void getMP3Detail()
+        {
+            byte[] tagBody = new byte[128];
+            Stream fs = new FileStream("song.mp3", FileMode.Open);
+
+            fs.Seek(-128, SeekOrigin.End);
+            fs.Read(tagBody, 0, 128);
+            fs.Dispose();
+
+            string tagFlag = Encoding.Default.GetString(tagBody, 0, 3);
+            if (tagFlag == "TAG")
+            {
+                Console.WriteLine(Encoding.Default.GetString(tagBody,0,127).TrimEnd().Replace("\0",""));
+            }
         }
 
         public static void getLocalIP()
@@ -1131,6 +1157,11 @@ namespace TestMakeTools
                 url = Console.ReadLine();
             }
             string htmlContent = GetContent(url);
+            if (htmlContent.Equals("[[404]]"))
+            {
+                Console.Write("404 找不到頁面!!");
+                return;
+            }
             SiteMap sitemap = new SiteMap();
 
             sitemap.TopLink.Text = WebCrawler(url, topQuery, "value");
